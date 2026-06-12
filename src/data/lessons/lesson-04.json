@@ -1,0 +1,105 @@
+{
+  "id": 4,
+  "slug": "the-controls",
+  "title": "The Controls",
+  "subtitle": "How risk actually drops",
+  "icon": "🔒",
+  "hook": {
+    "metaphor": "Seatbelts, airbags, locks, ABS — controls are the engineered things that turn a hazard into a near-miss instead of a tragedy. In DRC, controls are how an identified risk actually goes down, not just gets documented.",
+    "scenario": "Two companies hold the same customer database. One encrypts it, scopes access to four people, and auto-deletes after 90 days. The other has it open on a shared drive 'for convenience.' Same data, wildly different risk — that gap is entirely controls."
+  },
+  "learn": [
+    "The core controls a builder should know: **access control** (who can touch what — least privilege), **encryption** (at rest and in transit), **data minimization** (collect/keep only what you need), **masking & tokenization** (show or store a safe stand-in instead of the real value), and **retention & deletion** (data has an expiry).",
+    "Crucial nuance for product-builders: a control can live at three levels. You can **implement** it (your product does it), **enforce** it (your product makes others do it / blocks violations), or **evidence** it (your product proves it happened). The same control means very different engineering at each level.",
+    "Controls map back to hazards from Stop 2: encryption blunts breach, minimization and retention blunt over-retention, masking blunts misuse. Picking controls is really *risk-to-control matching*."
+  ],
+  "buildBridge": "So your product must be deliberate about whether it **implements, enforces, or evidences** each control — because 'we support encryption' means nothing until you say which of the three you actually do.",
+  "interactions": [
+    {
+      "type": "hotspot",
+      "prompt": "Defense in depth: click each control layer to see the hazard it blunts and how a product delivers it.",
+      "riskLabel": "Hazard it blunts",
+      "controlLabel": "How a product delivers it",
+      "stages": [
+        {
+          "id": "access",
+          "label": "Access",
+          "icon": "🔑",
+          "risk": "Breach & misuse from over-broad access — the cause of most real incidents.",
+          "control": "Role/attribute-based access control, least privilege, just-in-time grants."
+        },
+        {
+          "id": "encrypt",
+          "label": "Encrypt",
+          "icon": "🔐",
+          "risk": "Readable data if storage or traffic is intercepted.",
+          "control": "Encryption at rest and in transit, with managed keys."
+        },
+        {
+          "id": "minimize",
+          "label": "Minimize",
+          "icon": "✂️",
+          "risk": "Over-collection — every extra field is extra blast radius.",
+          "control": "Collect and keep only what's needed; drop fields you can't justify."
+        },
+        {
+          "id": "mask",
+          "label": "Mask",
+          "icon": "🎭",
+          "risk": "Real sensitive values exposed to people/systems that only need a stand-in.",
+          "control": "Masking and tokenization — show or store a safe surrogate."
+        },
+        {
+          "id": "retain",
+          "label": "Retain",
+          "icon": "⏳",
+          "risk": "Over-retention — data you forgot to delete becomes tomorrow's liability.",
+          "control": "Retention policies with verifiable deletion across copies."
+        }
+      ]
+    },
+    {
+      "type": "classify",
+      "prompt": "For a DRC product, sort each capability by the level it operates at.",
+      "buckets": ["Implement", "Enforce", "Evidence"],
+      "items": [
+        { "label": "Encrypt the data we store ourselves", "bucket": "Implement" },
+        { "label": "Block any pipeline that writes unencrypted PII", "bucket": "Enforce" },
+        { "label": "Produce a report proving encryption was on all year", "bucket": "Evidence" },
+        { "label": "Auto-revoke access after 90 days of non-use", "bucket": "Enforce" }
+      ]
+    },
+    {
+      "type": "decision",
+      "prompt": "You can ship one control first for a product handling PII. Which gives the most risk reduction per unit effort?",
+      "options": [
+        { "label": "Least-privilege access control", "correct": true, "feedback": "Strong choice. Most real incidents trace to over-broad access. Scoping who can touch data cuts breach and misuse at once." },
+        { "label": "A fancy anomaly-detection dashboard", "correct": false, "feedback": "Detection is valuable later — but it watches problems you could have prevented by limiting access in the first place." },
+        { "label": "Tokenize every field everywhere", "correct": false, "feedback": "Powerful but heavy, and it breaks lots of legitimate use. Great as a targeted control, costly as a blanket first move." }
+      ]
+    }
+  ],
+  "teachBack": "In one line: *Controls are how risk actually drops — and for each one a product must decide whether it implements, enforces, or evidences it.*",
+  "checkpoint": [
+    {
+      "question": "Why does 'we support encryption' need a follow-up question?",
+      "options": [
+        "Because encryption is optional",
+        "Because a control can be implemented, enforced, or evidenced — and those are very different products",
+        "Because encryption only matters in transit"
+      ],
+      "answerIndex": 1,
+      "explanation": "The level (implement / enforce / evidence) defines the actual engineering and the value to the buyer."
+    },
+    {
+      "question": "Choosing which control to apply is really…",
+      "options": [
+        "Matching controls to the specific hazards you identified",
+        "Applying every control you can think of",
+        "Whatever the loudest customer asks for"
+      ],
+      "answerIndex": 0,
+      "explanation": "Encryption→breach, retention→over-retention, masking→misuse. It's risk-to-control matching."
+    }
+  ]
+}

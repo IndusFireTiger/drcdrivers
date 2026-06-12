@@ -1,0 +1,62 @@
+{
+  "id": 2,
+  "slug": "the-hazards",
+  "title": "The Hazards",
+  "subtitle": "Types of data risk",
+  "icon": "⚠️",
+  "hook": {
+    "metaphor": "A good driver reads hazards before they become crashes — the wet patch, the blind spot, the kid's ball rolling into the road. In DRC, 'hazards' are the distinct ways data can hurt you, and they're not all the dramatic breach you picture.",
+    "scenario": "An analyst copies a production table to their laptop to 'work faster.' No hacker, no malware — but you now have sensitive data on an unmanaged device, used beyond its purpose, with no record. That's three different hazards in one move."
+  },
+  "learn": [
+    "Data risk isn't one thing. The useful builder's taxonomy: **breach** (unauthorized access/exfiltration), **loss** (data deleted or made unavailable), **misuse** (data used beyond its agreed purpose), **over-retention** (keeping data longer than you should), **poor quality** (wrong/stale data driving wrong decisions), and **bias** (data that systematically skews outcomes).",
+    "Each hazard has a different *cause* and a different *control* — so lumping them into 'security' hides the work. Over-retention isn't stopped by encryption; bias isn't stopped by access control.",
+    "For a DRC product, hazards become a **risk taxonomy**: a structured list you can detect against, attach severity to, and surface. You can't score or report on a risk you haven't named."
+  ],
+  "buildBridge": "So your product must **detect, classify, and score risks against an explicit taxonomy** — turning vague 'this feels risky' into a ranked, surfaced list a team can actually act on.",
+  "interactions": [
+    {
+      "type": "classify",
+      "prompt": "Sort each incident under the hazard it best represents.",
+      "buckets": ["Breach / Misuse", "Over-retention", "Poor quality"],
+      "items": [
+        { "label": "Marketing reuses health data to target ads", "bucket": "Breach / Misuse" },
+        { "label": "5-year-old resumes still in the hiring DB", "bucket": "Over-retention" },
+        { "label": "Duplicate customer records skew revenue reports", "bucket": "Poor quality" },
+        { "label": "Ex-employee accounts still active for months", "bucket": "Over-retention" }
+      ]
+    },
+    {
+      "type": "decision",
+      "prompt": "Your risk engine flags 400 issues at once. What makes the list *useful* rather than noise?",
+      "options": [
+        { "label": "Show them alphabetically", "correct": false, "feedback": "Order without severity buries the dangerous items among the trivial ones." },
+        { "label": "Score each by severity and likelihood, then rank", "correct": true, "feedback": "Exactly. A taxonomy plus scoring turns 400 flags into a prioritized queue — the difference between insight and alarm fatigue." },
+        { "label": "Only show breaches, hide the rest", "correct": false, "feedback": "Breach is just one hazard. Hiding over-retention and misuse means they grow unseen." }
+      ]
+    }
+  ],
+  "teachBack": "In one line: *Data risk is several distinct hazards with different causes and controls — so a DRC product needs a named taxonomy it can detect and score against.*",
+  "checkpoint": [
+    {
+      "question": "Why isn't 'data risk = breach' good enough for a DRC product?",
+      "options": [
+        "Because breaches are actually rare",
+        "Because risk includes loss, misuse, over-retention, poor quality and bias — each with different causes and controls",
+        "Because regulators only care about retention"
+      ],
+      "answerIndex": 1,
+      "explanation": "Treating all risk as 'security' hides hazards that encryption and access control never touch."
+    },
+    {
+      "question": "What turns a pile of risk flags into something a team can act on?",
+      "options": [
+        "An explicit taxonomy plus severity scoring and ranking",
+        "More flags, surfaced faster",
+        "Hiding everything except the worst one"
+      ],
+      "answerIndex": 0,
+      "explanation": "Named categories + scoring = a prioritized queue instead of alarm fatigue."
+    }
+  ]
+}

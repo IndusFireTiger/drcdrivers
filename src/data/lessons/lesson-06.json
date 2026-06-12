@@ -1,0 +1,98 @@
+{
+  "id": 6,
+  "slug": "crash-and-recovery",
+  "title": "The Crash & Recovery",
+  "subtitle": "Incident response",
+  "icon": "🚑",
+  "hook": {
+    "metaphor": "Even great drivers crash. What separates a fender-bender from a catastrophe is the next ten minutes: do you know what to do, who to call, and the clock you're racing? Incident response is the drill you run before you ever need it.",
+    "scenario": "At 2am an alert fires: a service account just exported 50,000 customer records to an unknown IP. The breach already happened. Everything that matters now is how fast and how cleanly you detect, contain, notify, and learn."
+  },
+  "learn": [
+    "Incident response is a sequence, not a panic: **detect** (notice it fast — the longer the dwell time, the worse the damage), **contain** (stop the bleeding — revoke, isolate, cut access), **notify** (tell regulators and affected people within the legal clock), and **learn** (a blameless post-incident review that closes the gap).",
+    "The clock is real and specific. GDPR requires notifying the regulator within **72 hours** of becoming aware of a breach; other regimes set their own. A product that detects fast but can't help you notify in time still fails the requirement.",
+    "For a builder, this is where the whole road pays off: your data **map** (Stop 1) tells you what was exposed, your **risk taxonomy** (Stop 2) tells you how bad, your **controls** (Stop 4) contain it, and your **audit trail** (Stop 5) reconstructs what happened. Incident response is the integration test of your DRC product."
+  ],
+  "buildBridge": "So your product must **shorten detection, enable one-click containment, and drive the notification clock** — surfacing exactly what was exposed, to whom, and by when you must report, in the worst ten minutes.",
+  "interactions": [
+    {
+      "type": "hotspot",
+      "prompt": "The incident-response flow. Click each phase to see what's happening and what your product must do in it.",
+      "riskLabel": "In this phase",
+      "controlLabel": "Your product's job",
+      "stages": [
+        {
+          "id": "detect",
+          "label": "Detect",
+          "icon": "🚨",
+          "risk": "Something's wrong — the faster you notice, the smaller the damage (dwell time).",
+          "control": "Anomaly detection on access/exports; clear, fast, actionable alerts."
+        },
+        {
+          "id": "contain",
+          "label": "Contain",
+          "icon": "🛑",
+          "risk": "Data may still be leaving right now — stop the bleeding before anything else.",
+          "control": "One-click revoke/isolate; cut the credential, account, or path."
+        },
+        {
+          "id": "notify",
+          "label": "Notify",
+          "icon": "📣",
+          "risk": "Legal clocks are running (e.g. GDPR's 72 hours to the regulator).",
+          "control": "Surface scope (who/what) and drive the notification deadline."
+        },
+        {
+          "id": "learn",
+          "label": "Learn",
+          "icon": "📚",
+          "risk": "The same gap will reopen if nobody closes it.",
+          "control": "Blameless post-mortem fed by the audit trail; track the fix."
+        }
+      ]
+    },
+    {
+      "type": "decision",
+      "prompt": "The 2am breach alert just fired. What's the correct *first* move?",
+      "options": [
+        { "label": "Contain it — revoke the credential and cut the export path", "correct": true, "feedback": "Right. Stop the bleeding first. Every minute of continued access widens the blast radius before you do anything else." },
+        { "label": "Draft the customer notification email", "correct": false, "feedback": "Notification matters and the clock is ticking — but not before you've stopped the data still leaving right now." },
+        { "label": "Start the post-incident review", "correct": false, "feedback": "Learning comes last, once the incident is contained. Reviewing a still-active breach is rearranging deck chairs." }
+      ]
+    },
+    {
+      "type": "classify",
+      "prompt": "Put each action in the incident-response phase it belongs to.",
+      "buckets": ["Detect", "Contain", "Notify / Learn"],
+      "items": [
+        { "label": "Anomaly alert on unusual data export", "bucket": "Detect" },
+        { "label": "Revoke the compromised service account", "bucket": "Contain" },
+        { "label": "File the regulator report within 72 hours", "bucket": "Notify / Learn" },
+        { "label": "Run a blameless post-mortem", "bucket": "Notify / Learn" }
+      ]
+    }
+  ],
+  "teachBack": "In one line: *Incident response runs detect → contain → notify → learn against a legal clock — and it's where your map, risk taxonomy, controls, and audit trail all prove their worth.*",
+  "checkpoint": [
+    {
+      "question": "Why is detection speed (dwell time) so important?",
+      "options": [
+        "It looks good in a demo",
+        "The longer an incident goes unnoticed, the more damage accumulates before you can contain it",
+        "Regulators only score detection"
+      ],
+      "answerIndex": 1,
+      "explanation": "Containment can't start until you've detected — every undetected minute widens the blast radius."
+    },
+    {
+      "question": "How does the full DRC road show up during an incident?",
+      "options": [
+        "It doesn't — incident response is separate",
+        "The map shows what's exposed, the taxonomy how bad, controls contain it, the audit trail reconstructs it",
+        "Only the audit trail matters"
+      ],
+      "answerIndex": 1,
+      "explanation": "Incident response is the integration test where every earlier stop pays off together."
+    }
+  ]
+}

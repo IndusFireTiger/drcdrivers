@@ -1,0 +1,115 @@
+{
+  "id": 1,
+  "slug": "the-road",
+  "title": "The Road",
+  "subtitle": "Data lifecycle & discovery",
+  "icon": "🛣️",
+  "hook": {
+    "metaphor": "Before you can drive safely, you need to know the road — every turn, every place the car and its cargo go. In DRC, the 'road' is your data's journey: where it's created, where it flows, where it rests, and where it should die.",
+    "scenario": "Your team is asked: \"Where is all our customer data?\" After two days of asking around, nobody can give a complete answer. That gap — not a hacker — is your first real risk."
+  },
+  "learn": [
+    "Data has a lifecycle: it is **created or collected**, **stored**, **used and shared**, and eventually **archived or deleted**. Risk and compliance obligations attach at every stage — not just at the moment of a breach.",
+    "You cannot govern, protect, or prove compliance for data you cannot see. So the foundational capability isn't a lock — it's a **map**. Knowing what data you hold, where it lives, how sensitive it is, and how it flows is the precondition for everything else.",
+    "Three building blocks make data visible: **discovery** (find data across systems), **classification** (label it — public, internal, PII, sensitive), and **lineage** (trace how it moves from source to destination)."
+  ],
+  "buildBridge": "So your product must be able to **discover data across heterogeneous systems, classify it by sensitivity, and trace its lineage** — because every downstream feature (risk scoring, controls, audit) depends on a trustworthy map of the data you hold.",
+  "interactions": [
+    {
+      "type": "hotspot",
+      "prompt": "Walk the data lifecycle. Click each stage to see the risk that lives there and the control that addresses it.",
+      "stages": [
+        {
+          "id": "collect",
+          "label": "Collect",
+          "icon": "📥",
+          "risk": "Grabbing more than you need, or without a lawful basis / consent.",
+          "control": "Data minimization + consent capture at the point of collection."
+        },
+        {
+          "id": "store",
+          "label": "Store",
+          "icon": "🗄️",
+          "risk": "Sensitive data sitting readable, in unknown places, accessible too widely.",
+          "control": "Discovery + classification, encryption at rest, least-privilege access."
+        },
+        {
+          "id": "use",
+          "label": "Use",
+          "icon": "⚙️",
+          "risk": "Data used beyond its original purpose, or copied into shadow systems.",
+          "control": "Purpose limitation, masking/tokenization, lineage to trace copies."
+        },
+        {
+          "id": "share",
+          "label": "Share",
+          "icon": "🔁",
+          "risk": "Data leaving your boundary to third parties or across regions.",
+          "control": "Access controls, data-sharing agreements, residency rules."
+        },
+        {
+          "id": "delete",
+          "label": "Delete",
+          "icon": "🗑️",
+          "risk": "Keeping data forever — over-retention you can be asked to prove you ended.",
+          "control": "Retention limits + verifiable deletion across all copies."
+        }
+      ]
+    },
+    {
+      "type": "decision",
+      "prompt": "Leadership wants a DRC product shipped fast. Which capability do you build *first*?",
+      "options": [
+        {
+          "label": "Encryption everywhere",
+          "correct": false,
+          "feedback": "Encryption matters — but encrypting data you haven't found or classified leaves blind spots. You'd be locking some doors in a house whose floor plan you don't have."
+        },
+        {
+          "label": "Data discovery & classification",
+          "correct": true,
+          "feedback": "Right. You can't protect, govern, or prove compliance for data you can't see. Discovery + classification is the map every other capability is built on."
+        },
+        {
+          "label": "A compliance reporting dashboard",
+          "correct": false,
+          "feedback": "Reports are only as honest as the data behind them. A dashboard built before discovery reports on a partial picture — confidently wrong."
+        }
+      ]
+    },
+    {
+      "type": "classify",
+      "prompt": "Drag each item to its sensitivity label. (Click an item, then click a bucket.)",
+      "buckets": ["Public", "Internal", "PII / Sensitive"],
+      "items": [
+        { "label": "Published blog post", "bucket": "Public" },
+        { "label": "Internal roadmap doc", "bucket": "Internal" },
+        { "label": "Customer email + home address", "bucket": "PII / Sensitive" },
+        { "label": "Employee salary record", "bucket": "PII / Sensitive" }
+      ]
+    }
+  ],
+  "teachBack": "In one line: *You can't govern data you can't see — so the first DRC capability is a living map of your data, not a lock.*",
+  "checkpoint": [
+    {
+      "question": "Why is data discovery the foundation of a DRC product?",
+      "options": [
+        "Because regulators require a discovery tool by name",
+        "Because you can't protect, govern, or prove compliance for data you can't see",
+        "Because discovery is the cheapest feature to build"
+      ],
+      "answerIndex": 1,
+      "explanation": "Every downstream capability — controls, risk scoring, audit — depends on knowing what data you actually hold."
+    },
+    {
+      "question": "Which trio makes data visible and governable?",
+      "options": [
+        "Discovery, classification, lineage",
+        "Encryption, backup, firewall",
+        "Consent, contract, cookie banner"
+      ],
+      "answerIndex": 0,
+      "explanation": "Discovery finds it, classification labels its sensitivity, lineage traces how it flows."
+    }
+  ]
+}

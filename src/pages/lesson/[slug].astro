@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import LessonView from '../../components/LessonView.jsx';
+import { roadStops, getLesson, getAllSlugs } from '../../data/lessons.js';
+
+export function getStaticPaths() {
+  return getAllSlugs().map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const lesson = getLesson(slug);
+
+// Next available stop after this one (for the "drive on" button).
+const idx = roadStops.findIndex((s) => s.slug === slug);
+const next = roadStops.slice(idx + 1).find((s) => s.available);
+const nextSlug = next ? next.slug : null;
+---
+
+<Base title={`Stop ${lesson.id}: ${lesson.title} — DRCDrivers`}>
+  <LessonView client:load lesson={lesson} nextSlug={nextSlug} />
+</Base>

@@ -1,0 +1,63 @@
+{
+  "id": 3,
+  "slug": "rules-of-the-road",
+  "title": "The Rules of the Road",
+  "subtitle": "Compliance as a spec",
+  "icon": "🚦",
+  "hook": {
+    "metaphor": "Traffic laws aren't there to slow you down for fun — they encode hard-won lessons about what keeps everyone safe. Compliance regimes are the same: each clause is a requirement you can read as a product spec, not legalese to fear.",
+    "scenario": "A customer emails: 'Delete everything you hold about me.' That single sentence is a legal right (GDPR's erasure, India's DPDP). The question for you isn't 'is this allowed?' — it's 'can our product actually find, and provably delete, every copy?'"
+  },
+  "learn": [
+    "You don't need to be a lawyer. You need to read regulations as **capabilities your product must support**. The major regimes — **GDPR** (EU), **HIPAA** (US health), **CCPA/CPRA** (California), **DPDP** (India) — differ in detail but rhyme in what they demand.",
+    "The recurring demands, as features: **consent** (capture and honor a lawful basis), **DSARs / access requests** (show a person their data on demand), **right to erasure** (delete it, everywhere, provably), **data residency** (keep data in-region), **retention limits** (don't keep it forever), and **breach notification** (tell regulators/users within a clock).",
+    "The builder's move is translation: every clause → a concrete capability with a data model and an API. 'Right to be forgotten' isn't a paragraph; it's a deletion workflow that traverses lineage (remember Stop 1's map)."
+  ],
+  "buildBridge": "So your product must **translate regulatory clauses into enforceable capabilities** — consent records, DSAR fulfilment, verifiable deletion, residency rules — rather than treating compliance as a PDF someone signs.",
+  "interactions": [
+    {
+      "type": "match",
+      "prompt": "Match each regulatory requirement to the product capability it demands.",
+      "leftLabel": "Requirement",
+      "rightLabel": "Your product must…",
+      "pairs": [
+        { "left": "Right to be forgotten (GDPR/DPDP)", "right": "Traverse lineage and provably delete every copy" },
+        { "left": "Data subject access request", "right": "Assemble and export everything you hold on a person" },
+        { "left": "Data residency", "right": "Pin storage/processing to a specific region" },
+        { "left": "Breach notification", "right": "Detect, then alert within a fixed time clock" }
+      ]
+    },
+    {
+      "type": "decision",
+      "prompt": "Your product launches in the EU, US, and India. How do you handle their different rules?",
+      "options": [
+        { "label": "Build a separate app per region", "correct": false, "feedback": "Triple the maintenance, triple the drift. Regimes rhyme — model the common capabilities once." },
+        { "label": "Model capabilities once, make the *policy* configurable per region", "correct": true, "feedback": "Yes. One consent engine, one deletion workflow — driven by region-specific policy. This is 'compliance as configuration,' not forked code." },
+        { "label": "Comply with the strictest one everywhere and ignore the rest", "correct": false, "feedback": "Tempting, but residency and lawful-basis rules can actively conflict — 'strictest' isn't always a superset." }
+      ]
+    }
+  ],
+  "teachBack": "In one line: *Read every regulation as a product spec — consent, access, erasure, residency, notification — and model the capability once, configured per region.*",
+  "checkpoint": [
+    {
+      "question": "What's the builder's right way to treat a compliance regime?",
+      "options": [
+        "As legalese only the legal team handles",
+        "As a set of capabilities your product must support, expressed as features",
+        "As a one-time certification you pass and forget"
+      ],
+      "answerIndex": 1,
+      "explanation": "Clauses become consent records, DSAR flows, deletion workflows — buildable things."
+    },
+    {
+      "question": "Why model capabilities once and configure policy per region?",
+      "options": [
+        "Because the regimes are identical",
+        "Because regimes rhyme — shared capabilities, region-specific policy avoids forked, drifting code",
+        "Because only the EU matters"
+      ],
+      "answerIndex": 1,
+      "explanation": "One deletion/consent engine driven by per-region policy = 'compliance as configuration.'"
+    }
+  ]
+}

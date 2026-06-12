@@ -1,0 +1,63 @@
+{
+  "id": 5,
+  "slug": "the-inspection",
+  "title": "The Inspection",
+  "subtitle": "Governance & audit",
+  "icon": "🔍",
+  "hook": {
+    "metaphor": "Your car passes inspection not because you say it's safe, but because there's a record and an inspector who checks. The dashcam doesn't prevent accidents — it proves what happened. DRC governance is that inspector plus that dashcam.",
+    "scenario": "An auditor asks: 'Show me that only authorized people accessed patient records last quarter.' If your answer is 'trust us, we're careful,' you've already failed. They want evidence, not assurances."
+  },
+  "learn": [
+    "**Governance** answers *who owns this and by what rule* — clear data owners, documented policies, and ideally **policy-as-code** so rules are executable, not just written in a wiki nobody reads.",
+    "**Audit** answers *can you prove it* — immutable **audit logs**, an **evidence trail** that ties each control to the requirement it satisfies, and the ability to reconstruct what happened after the fact.",
+    "The builder's insight: compliance is won or lost at **evidence time**, not policy time. A control that works but can't be proven is, to an auditor, a control that doesn't exist. So your product's job is to make evidence a byproduct of normal operation, not a frantic quarterly scramble."
+  ],
+  "buildBridge": "So your product must **generate tamper-evident audit trails and map each control to the framework requirement it satisfies** — turning 'we comply' into 'here's the proof, on demand.'",
+  "interactions": [
+    {
+      "type": "match",
+      "prompt": "Match each governance/audit need to what the product provides.",
+      "leftLabel": "Need",
+      "rightLabel": "Product capability",
+      "pairs": [
+        { "left": "Who is responsible for this data?", "right": "Assigned data owners + documented policy" },
+        { "left": "Are our rules actually applied?", "right": "Policy-as-code that executes, not a wiki page" },
+        { "left": "What happened to record X?", "right": "Immutable, queryable audit log" },
+        { "left": "Does control Y satisfy requirement Z?", "right": "Control-to-framework evidence mapping" }
+      ]
+    },
+    {
+      "type": "decision",
+      "prompt": "When should your product be producing audit evidence?",
+      "options": [
+        { "label": "Continuously, as a byproduct of normal operation", "correct": true, "feedback": "Right. Evidence captured live is trustworthy and painless. Evidence reconstructed under deadline pressure is incomplete and suspect." },
+        { "label": "Once a quarter, in a big export job", "correct": false, "feedback": "The quarterly scramble is exactly the failure mode — gaps appear and nobody can reconstruct the missing weeks." },
+        { "label": "Only when an auditor specifically asks", "correct": false, "feedback": "By then the events have passed. You can't log what already happened without a trail." }
+      ]
+    }
+  ],
+  "teachBack": "In one line: *Compliance is won at evidence time — so a DRC product makes tamper-evident proof a byproduct of normal operation and maps every control to the requirement it satisfies.*",
+  "checkpoint": [
+    {
+      "question": "Why is 'the control works' not enough for an auditor?",
+      "options": [
+        "Auditors don't trust engineers",
+        "A control that can't be proven is, to an auditor, a control that doesn't exist",
+        "Controls always fail eventually"
+      ],
+      "answerIndex": 1,
+      "explanation": "Compliance is decided at evidence time; unprovable controls don't count."
+    },
+    {
+      "question": "What's the right way to produce audit evidence?",
+      "options": [
+        "Continuously, as a byproduct of normal operation",
+        "In a frantic quarterly export",
+        "Only on auditor request"
+      ],
+      "answerIndex": 0,
+      "explanation": "Live capture is complete and trustworthy; reconstruction after the fact has gaps."
+    }
+  ]
+}
