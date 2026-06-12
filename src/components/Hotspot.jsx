@@ -30,35 +30,48 @@ export default function Hotspot({
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <p className="font-medium text-slate-800">{prompt}</p>
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+      <p className="font-medium text-slate-800 dark:text-slate-200">{prompt}</p>
 
-      <svg viewBox={`0 0 ${W} ${H}`} className="mt-4 w-full" role="group" aria-label="Data lifecycle flow">
+      <svg viewBox={`0 0 ${W} ${H}`} className="mt-4 w-full" role="group" aria-label="Stage flow diagram">
         {/* the pipe */}
-        <line x1={margin} y1={cy} x2={W - margin} y2={cy} stroke="#e2e8f0" strokeWidth="6" strokeLinecap="round" />
+        <line
+          x1={margin}
+          y1={cy}
+          x2={W - margin}
+          y2={cy}
+          strokeWidth="6"
+          strokeLinecap="round"
+          className="stroke-slate-200 dark:stroke-slate-700"
+        />
         {stages.map((s, i) => {
           const cx = margin + span * i;
           const isActive = s.id === activeId;
           const isVisited = visited[s.id];
+          const circleTone = isActive
+            ? 'fill-amber-500 stroke-amber-700'
+            : isVisited
+              ? 'fill-emerald-100 stroke-emerald-400 dark:fill-emerald-900'
+              : 'fill-white stroke-slate-300 dark:fill-slate-800 dark:stroke-slate-600';
           return (
             <g key={s.id} className="cursor-pointer" onClick={() => open(s.id)}>
               {/* connector arrowhead */}
               {i < stages.length - 1 && (
                 <polygon
                   points={`${cx + span - 14},${cy - 5} ${cx + span - 6},${cy} ${cx + span - 14},${cy + 5}`}
-                  fill="#cbd5e1"
+                  className="fill-slate-300 dark:fill-slate-600"
                 />
               )}
-              <circle
-                cx={cx}
-                cy={cy}
-                r="26"
-                fill={isActive ? '#f59e0b' : isVisited ? '#d1fae5' : '#fff'}
-                stroke={isActive ? '#b45309' : isVisited ? '#34d399' : '#cbd5e1'}
-                strokeWidth="3"
-              />
+              <circle cx={cx} cy={cy} r="26" strokeWidth="3" className={circleTone} />
               <text x={cx} y={cy + 7} textAnchor="middle" fontSize="22">{s.icon}</text>
-              <text x={cx} y={cy + 50} textAnchor="middle" fontSize="13" fill="#475569" fontWeight="600">
+              <text
+                x={cx}
+                y={cy + 50}
+                textAnchor="middle"
+                fontSize="13"
+                fontWeight="600"
+                className="fill-slate-600 dark:fill-slate-300"
+              >
                 {s.label}
               </text>
             </g>
@@ -68,13 +81,13 @@ export default function Hotspot({
 
       {active ? (
         <div className="mt-2 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-lg border border-rose-200 bg-rose-50 p-3">
-            <span className="text-xs font-semibold uppercase tracking-wide text-rose-600">{riskLabel}</span>
-            <p className="mt-1 text-sm text-slate-700">{active.risk}</p>
+          <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 dark:border-rose-800/50 dark:bg-rose-900/20">
+            <span className="text-xs font-semibold uppercase tracking-wide text-rose-600 dark:text-rose-400">{riskLabel}</span>
+            <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">{active.risk}</p>
           </div>
-          <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
-            <span className="text-xs font-semibold uppercase tracking-wide text-emerald-700">{controlLabel}</span>
-            <p className="mt-1 text-sm text-slate-700">{active.control}</p>
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-800/50 dark:bg-emerald-900/20">
+            <span className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">{controlLabel}</span>
+            <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">{active.control}</p>
           </div>
         </div>
       ) : (

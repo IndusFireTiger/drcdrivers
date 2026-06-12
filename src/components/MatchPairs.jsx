@@ -30,11 +30,11 @@ export default function MatchPairs({ prompt, leftLabel, rightLabel, pairs, onRes
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <p className="font-medium text-slate-800">{prompt}</p>
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+      <p className="font-medium text-slate-800 dark:text-slate-200">{prompt}</p>
       <div className="mt-4 grid grid-cols-2 gap-4">
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{leftLabel}</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{leftLabel}</p>
           <div className="space-y-2">
             {pairs.map((p, i) => {
               const done = matched[i];
@@ -44,12 +44,12 @@ export default function MatchPairs({ prompt, leftLabel, rightLabel, pairs, onRes
                   key={i}
                   disabled={done}
                   onClick={() => setSelected(active ? null : i)}
-                  className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition ${
+                  className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition dark:text-slate-200 ${
                     done
-                      ? 'border-emerald-400 bg-emerald-50 text-emerald-800'
+                      ? 'border-emerald-400 bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
                       : active
-                        ? 'border-amber-500 bg-amber-100'
-                        : 'border-slate-300 hover:border-amber-400'
+                        ? 'border-amber-500 bg-amber-100 dark:bg-amber-900/40'
+                        : 'border-slate-300 hover:border-amber-400 dark:border-slate-600'
                   }`}
                 >
                   {p.left}
@@ -59,7 +59,7 @@ export default function MatchPairs({ prompt, leftLabel, rightLabel, pairs, onRes
           </div>
         </div>
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{rightLabel}</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{rightLabel}</p>
           <div className="space-y-2">
             {rightOrder.map((pairIdx) => {
               const done = matched[pairIdx];
@@ -68,10 +68,10 @@ export default function MatchPairs({ prompt, leftLabel, rightLabel, pairs, onRes
                   key={pairIdx}
                   disabled={done}
                   onClick={() => chooseRight(pairIdx)}
-                  className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition ${
+                  className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition dark:text-slate-200 ${
                     done
-                      ? 'border-emerald-400 bg-emerald-50 text-emerald-800'
-                      : 'border-slate-300 hover:border-amber-400'
+                      ? 'border-emerald-400 bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
+                      : 'border-slate-300 hover:border-amber-400 dark:border-slate-600'
                   }`}
                 >
                   {pairs[pairIdx].right}
@@ -81,9 +81,9 @@ export default function MatchPairs({ prompt, leftLabel, rightLabel, pairs, onRes
           </div>
         </div>
       </div>
-      {wrong && <p className="mt-3 text-sm text-rose-500">{wrong}</p>}
+      {wrong && <p className="mt-3 text-sm text-rose-500 dark:text-rose-400">{wrong}</p>}
       {Object.keys(matched).length === pairs.length && (
-        <p className="mt-3 text-sm font-medium text-emerald-600">All matched — that's the spec.</p>
+        <p className="mt-3 text-sm font-medium text-emerald-600 dark:text-emerald-400">All matched — that's the spec.</p>
       )}
     </div>
   );

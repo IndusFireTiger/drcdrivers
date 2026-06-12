@@ -22,20 +22,20 @@ export default function Checkpoint({ questions, onPassed }) {
       {questions.map((q, qi) => {
         const chosen = answers[qi];
         return (
-          <div key={qi} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="font-medium text-slate-800">{q.question}</p>
+          <div key={qi} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p className="font-medium text-slate-800 dark:text-slate-200">{q.question}</p>
             <div className="mt-3 space-y-2">
               {q.options.map((opt, oi) => {
                 const isChosen = chosen === oi;
                 const correct = oi === q.answerIndex;
-                let tone = 'border-slate-200 hover:border-amber-400 hover:bg-amber-50';
-                if (isChosen && correct) tone = 'border-emerald-400 bg-emerald-50';
-                else if (isChosen && !correct) tone = 'border-rose-400 bg-rose-50';
+                let tone = 'border-slate-200 hover:border-amber-400 hover:bg-amber-50 dark:border-slate-600 dark:hover:bg-amber-900/20';
+                if (isChosen && correct) tone = 'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/30';
+                else if (isChosen && !correct) tone = 'border-rose-400 bg-rose-50 dark:bg-rose-900/30';
                 return (
                   <button
                     key={oi}
                     onClick={() => pick(qi, oi)}
-                    className={`w-full rounded-lg border px-4 py-2.5 text-left text-sm transition ${tone}`}
+                    className={`w-full rounded-lg border px-4 py-2.5 text-left text-sm transition text-slate-700 dark:text-slate-200 ${tone}`}
                   >
                     {opt}
                   </button>
@@ -43,16 +43,16 @@ export default function Checkpoint({ questions, onPassed }) {
               })}
             </div>
             {chosen !== undefined && chosen === q.answerIndex && (
-              <p className="mt-2 text-sm text-emerald-700">{q.explanation}</p>
+              <p className="mt-2 text-sm text-emerald-700 dark:text-emerald-400">{q.explanation}</p>
             )}
             {chosen !== undefined && chosen !== q.answerIndex && (
-              <p className="mt-2 text-sm text-rose-500">Not quite — try another option.</p>
+              <p className="mt-2 text-sm text-rose-500 dark:text-rose-400">Not quite — try another option.</p>
             )}
           </div>
         );
       })}
       {allCorrect && (
-        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
           ✅ Checkpoint cleared — the next stop is unlocked.
         </p>
       )}
