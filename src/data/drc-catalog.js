@@ -1,4 +1,4 @@
-// A reference catalog of major GRC instruments worldwide.
+// A reference catalog of major DRC instruments worldwide.
 // type:   Regulation | Law / Statute | Framework | Standard | Program / Cert
 // scope:  "Global" (voluntary/international, usable anywhere) vs
 //         "Region-specific" (legally binding within a jurisdiction)

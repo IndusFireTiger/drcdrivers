@@ -170,7 +170,7 @@ export default function RoadMap({ stops }) {
 
       <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
         <a href="/atlas" className="text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400">
-          🌍 Explore the global GRC Atlas
+          🌍 Explore the global DRC Atlas
         </a>
         <a href="/cheatsheet" className="text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400">
           📄 Jump to the one-page cheat-sheet

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { catalog, regionGroupOrder, lessonSlugFor } from '../data/grc-catalog.js';
+import { catalog, regionGroupOrder, lessonSlugFor } from '../data/drc-catalog.js';
 import { roadStops } from '../data/lessons.js';
 import WorldMap from './WorldMap.jsx';
 
@@ -8,9 +8,9 @@ const TYPE_ORDER = ['Regulation', 'Law / Statute', 'Framework', 'Standard', 'Pro
 // slug -> lesson title, for the "related concept" cross-links on each card.
 const LESSON_TITLE = Object.fromEntries(roadStops.map((s) => [s.slug, `${s.id}. ${s.title}`]));
 
-// Interactive atlas of GRC instruments worldwide, filterable by region, type and
+// Interactive atlas of DRC instruments worldwide, filterable by region, type and
 // whether each is globally usable or legally region-specific.
-export default function GrcAtlas() {
+export default function DrcAtlas() {
   const [region, setRegion] = useState('All');
   const [type, setType] = useState('All');
   const [scope, setScope] = useState('All');
@@ -58,12 +58,12 @@ export default function GrcAtlas() {
     <div className="mx-auto max-w-5xl px-5 py-12">
       <header className="text-center">
         <a href="/" className="text-sm text-slate-500 hover:text-amber-600 dark:text-slate-400">← The road</a>
-        <p className="mt-3 text-sm font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">The GRC Atlas</p>
+        <p className="mt-3 text-sm font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">The DRC Atlas</p>
         <h1 className="mt-2 text-4xl font-bold text-slate-900 dark:text-slate-100">
           Regulations, laws, frameworks &amp; standards — worldwide
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-slate-600 dark:text-slate-300">
-          The Governance, Risk &amp; Compliance landscape in one place. Some apply{' '}
+          The Data Risk &amp; Compliance landscape in one place. Some apply{' '}
           <span className="font-semibold text-sky-600 dark:text-sky-400">everywhere</span>; many are{' '}
           <span className="font-semibold text-amber-600 dark:text-amber-400">tied to a region</span>. Filter to see how
           they differ — and which your product must answer to.
