@@ -17,7 +17,7 @@ export default function LessonView({ lesson, nextSlug }) {
   return (
     <article className="mx-auto max-w-2xl space-y-10 px-5 py-10">
       <header>
-        <a href="/" className="text-sm text-slate-500 hover:text-amber-600 dark:text-slate-400">← The road</a>
+        <a href="/road" className="text-sm text-slate-500 hover:text-amber-600 dark:text-slate-400">← The road</a>
         <h1 className="mt-2 text-3xl font-bold text-slate-900 dark:text-slate-100">
           <span className="mr-2">{lesson.icon}</span>Stop {lesson.id}: {lesson.title}
         </h1>
@@ -48,14 +48,19 @@ export default function LessonView({ lesson, nextSlug }) {
         <p className="mt-1" dangerouslySetInnerHTML={{ __html: mdBold(lesson.buildBridge) }} />
       </section>
 
-      {/* Optional related-resource link */}
+      {/* Optional related-resource link(s) — one object or an array */}
       {lesson.seeAlso && (
-        <a
-          href={lesson.seeAlso.href}
-          className="-mt-4 block rounded-xl border border-sky-200 bg-sky-50 px-5 py-3 text-sm font-medium text-sky-700 transition hover:border-sky-400 dark:border-sky-800/50 dark:bg-sky-900/20 dark:text-sky-300"
-        >
-          {lesson.seeAlso.label} →
-        </a>
+        <div className="-mt-4 space-y-2">
+          {(Array.isArray(lesson.seeAlso) ? lesson.seeAlso : [lesson.seeAlso]).map((s, i) => (
+            <a
+              key={i}
+              href={s.href}
+              className="block rounded-xl border border-sky-200 bg-sky-50 px-5 py-3 text-sm font-medium text-sky-700 transition hover:border-sky-400 dark:border-sky-800/50 dark:bg-sky-900/20 dark:text-sky-300"
+            >
+              {s.label} →
+            </a>
+          ))}
+        </div>
       )}
 
       {/* Interactions */}
@@ -96,7 +101,7 @@ export default function LessonView({ lesson, nextSlug }) {
             <a href="/cheatsheet" className="inline-block rounded-lg bg-emerald-600 px-5 py-3 font-medium text-white hover:bg-emerald-700">
               🏁 You've driven the whole road — get the cheat-sheet
             </a>
-            <a href="/" className="inline-block rounded-lg border border-slate-300 px-5 py-3 font-medium text-slate-600 hover:border-amber-400 dark:border-slate-600 dark:text-slate-300">
+            <a href="/road" className="inline-block rounded-lg border border-slate-300 px-5 py-3 font-medium text-slate-600 hover:border-amber-400 dark:border-slate-600 dark:text-slate-300">
               Back to the map
             </a>
           </div>

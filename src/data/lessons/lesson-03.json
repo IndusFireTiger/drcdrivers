@@ -14,7 +14,10 @@
     "The builder's move is translation: every clause → a concrete capability with a data model and an API. 'Right to be forgotten' isn't a paragraph; it's a deletion workflow that traverses lineage (remember Stop 1's map)."
   ],
   "buildBridge": "So your product must **translate regulatory clauses into enforceable capabilities** — consent records, DSAR fulfilment, verifiable deletion, residency rules — rather than treating compliance as a PDF someone signs.",
-  "seeAlso": { "label": "🌍 Browse the global DRC Atlas — every regulation, framework & standard, and which are region-specific", "href": "/atlas" },
+  "seeAlso": [
+    { "label": "🧭 See exactly which rules apply to your product — open the Navigator", "href": "/" },
+    { "label": "🌍 Browse the global DRC Atlas — every regulation, framework & standard, and which are region-specific", "href": "/atlas" }
+  ],
   "interactions": [
     {
       "type": "match",

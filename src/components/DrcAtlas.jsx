@@ -57,7 +57,7 @@ export default function DrcAtlas() {
   return (
     <div className="mx-auto max-w-5xl px-5 py-12">
       <header className="text-center">
-        <a href="/" className="text-sm text-slate-500 hover:text-amber-600 dark:text-slate-400">← The road</a>
+        <a href="/road" className="text-sm text-slate-500 hover:text-amber-600 dark:text-slate-400">← The road</a>
         <p className="mt-3 text-sm font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">The DRC Atlas</p>
         <h1 className="mt-2 text-4xl font-bold text-slate-900 dark:text-slate-100">
           Regulations, laws, frameworks &amp; standards — worldwide

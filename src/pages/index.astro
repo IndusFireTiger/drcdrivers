@@ -1,9 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
-import RoadMap from '../components/RoadMap.jsx';
-import { roadStops } from '../data/lessons.js';
+import Navigator from '../components/Navigator.jsx';
 ---
 
-<Base>
-  <RoadMap client:load stops={roadStops} />
+<Base title="The Navigator — What applies to my product or organisation? · DRCDrivers">
+  <Navigator client:load />
 </Base>

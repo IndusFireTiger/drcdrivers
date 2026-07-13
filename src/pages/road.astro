@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import RoadMap from '../components/RoadMap.jsx';
+import { roadStops } from '../data/lessons.js';
+---
+
+<Base title="The DRC Road — DRCDrivers">
+  <RoadMap client:load stops={roadStops} />
+</Base>
