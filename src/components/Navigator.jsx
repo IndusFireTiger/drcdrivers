@@ -81,74 +81,75 @@ export function severity(r) {
 function dataRiskProfile(a) {
   const risks = [];
   const has = (arr, v) => arr.includes(v);
-  // push(icon, label, detail, likelihood, impact, controls[])
-  const push = (icon, label, detail, likelihood, impact, controls) => risks.push({ icon, label, detail, likelihood, impact, controls });
+  // push(icon, label, detail, likelihood, impact, controls[], cia[])
+  const push = (icon, label, detail, likelihood, impact, controls, cia) => risks.push({ icon, label, detail, likelihood, impact, controls, cia });
   const hasPersonal = a.dataTypes.some((d) => ['pii', 'health', 'children', 'financial', 'employee'].includes(d));
   const covered = a.jurisdictions.some((j) => j !== 'other');
   const coveredCount = a.jurisdictions.filter((j) => j !== 'other').length;
 
   // ── Breach & security ──
   if (hasPersonal)
-    push('🔓', 'Personal-data breach', 'Unauthorised access to, or exfiltration of, the personal data you hold — the classic breach.', 'med', 'high', ['encryption', 'access-control', 'logging', 'incident-response']);
+    push('🔓', 'Personal-data breach', 'Unauthorised access to, or exfiltration of, the personal data you hold — the classic breach.', 'med', 'high', ['encryption', 'access-control', 'logging', 'incident-response'], ['C']);
   if (hasPersonal && covered)
-    push('⏱️', 'Missed breach-notification clock', 'A breach starts a statutory notification clock (e.g. 72 hours under the General Data Protection Regulation, GDPR / UK GDPR). Miss it and one incident becomes two failures.', 'med', 'high', ['incident-response', 'logging']);
-  push('🕵️', 'Insider threat & over-broad access', 'Staff, contractors or service accounts able to see far more data than their role needs.', 'med', 'med', ['access-control', 'mfa', 'logging', 'security-training']);
-  push('🛠️', 'Weak security controls', 'Missing encryption, patching, logging or access reviews that turn a minor incident into a major one.', 'med', 'high', ['encryption', 'vuln-mgmt', 'logging', 'mfa']);
+    push('⏱️', 'Missed breach-notification clock', 'A breach starts a statutory notification clock (e.g. 72 hours under the General Data Protection Regulation, GDPR / UK GDPR). Miss it and one incident becomes two failures.', 'med', 'high', ['incident-response', 'logging'], ['C']);
+  push('🕵️', 'Insider threat & over-broad access', 'Staff, contractors or service accounts able to see far more data than their role needs.', 'med', 'med', ['access-control', 'mfa', 'logging', 'security-training'], ['C', 'I']);
+  push('🛠️', 'Weak security controls', 'Missing encryption, patching, logging or access reviews that turn a minor incident into a major one.', 'med', 'high', ['encryption', 'vuln-mgmt', 'logging', 'mfa'], ['C', 'I', 'A']);
 
   // ── Cross-border transfer ──
   if (has(a.activities, 'transfer'))
-    push('🌐', 'Unlawful cross-border transfer', 'Moving personal data across borders without a valid mechanism (adequacy, Standard Contractual Clauses/International Data Transfer Agreement) or breaching data-localisation rules.', 'high', 'high', ['transfer-mechanism', 'data-inventory']);
+    push('🌐', 'Unlawful cross-border transfer', 'Moving personal data across borders without a valid mechanism (adequacy, Standard Contractual Clauses/International Data Transfer Agreement) or breaching data-localisation rules.', 'high', 'high', ['transfer-mechanism', 'data-inventory'], ['C']);
 
   // ── Third parties / processors ──
   if (has(a.activities, 'thirdparty')) {
-    push('🔗', 'Third-party / supply-chain breach', 'A processor or vendor mishandles or leaks data you remain accountable for.', 'med', 'high', ['vendor-mgmt', 'logging', 'incident-response']);
-    push('📄', 'Missing data-processing agreements', 'Sharing data without the contractual terms (DPAs / Business Associate Agreements) regulators require.', 'med', 'med', ['vendor-mgmt']);
+    push('🔗', 'Third-party / supply-chain breach', 'A processor or vendor mishandles or leaks data you remain accountable for.', 'med', 'high', ['vendor-mgmt', 'logging', 'incident-response'], ['C', 'A']);
+    push('📄', 'Missing data-processing agreements', 'Sharing data without the contractual terms (DPAs / Business Associate Agreements) regulators require.', 'med', 'med', ['vendor-mgmt'], ['C']);
   }
 
-  // ── Storage & retention ──
+  // ── Storage, retention & availability ──
   if (has(a.activities, 'store')) {
-    push('🗄️', 'Over-retention', 'Keeping data longer than needed — a larger breach blast-radius and an erasure liability.', 'high', 'med', ['retention', 'data-minimization', 'data-inventory']);
-    push('👻', 'Shadow data & unknown copies', 'Ungoverned copies in exports, backups and analytics you cannot find or delete on request.', 'high', 'med', ['data-inventory', 'retention', 'access-control']);
+    push('🗄️', 'Over-retention', 'Keeping data longer than needed — a larger breach blast-radius and an erasure liability.', 'high', 'med', ['retention', 'data-minimization', 'data-inventory'], ['C']);
+    push('👻', 'Shadow data & unknown copies', 'Ungoverned copies in exports, backups and analytics you cannot find or delete on request.', 'high', 'med', ['data-inventory', 'retention', 'access-control'], ['C']);
+    push('💥', 'Data loss or service outage', 'Ransomware, accidental deletion or an outage makes data unavailable — no backups or recovery plan turns an incident into prolonged downtime.', 'med', 'high', ['backup', 'incident-response', 'logging'], ['A']);
   }
 
   // ── Data-type-specific ──
   if (has(a.dataTypes, 'health'))
-    push('🩺', 'Special-category (health) mishandling', 'Health data needs an extra lawful condition and stronger safeguards; ordinary handling is non-compliant.', 'med', 'high', ['consent-mgmt', 'encryption', 'access-control', 'dpia']);
+    push('🩺', 'Special-category (health) mishandling', 'Health data needs an extra lawful condition and stronger safeguards; ordinary handling is non-compliant.', 'med', 'high', ['consent-mgmt', 'encryption', 'access-control', 'dpia'], ['C']);
   if (has(a.dataTypes, 'children'))
-    push('🧒', "Children's-data / age-assurance failure", "Collecting children's data without verifiable parental consent or age-appropriate design.", 'med', 'high', ['age-verification', 'consent-mgmt', 'data-minimization']);
+    push('🧒', "Children's-data / age-assurance failure", "Collecting children's data without verifiable parental consent or age-appropriate design.", 'med', 'high', ['age-verification', 'consent-mgmt', 'data-minimization'], ['C']);
   if (has(a.dataTypes, 'cardholder'))
-    push('💳', 'Cardholder-data compromise', 'Card data in scope brings the Payment Card Industry Data Security Standard (PCI DSS); storing the PAN/CVV or weak controls invites fraud and fines.', 'med', 'high', ['pci-scope', 'encryption', 'access-control']);
+    push('💳', 'Cardholder-data compromise', 'Card data in scope brings the Payment Card Industry Data Security Standard (PCI DSS); storing the PAN/CVV or weak controls invites fraud and fines.', 'med', 'high', ['pci-scope', 'encryption', 'access-control'], ['C', 'I']);
   if (has(a.dataTypes, 'financial'))
-    push('🏦', 'Financial-data misuse / fraud', 'Account records are a high-value target and an anti-fraud / anti-money-laundering concern.', 'med', 'high', ['access-control', 'logging', 'incident-response']);
+    push('🏦', 'Financial-data misuse / fraud', 'Account records are a high-value target and an anti-fraud / anti-money-laundering concern.', 'med', 'high', ['access-control', 'logging', 'incident-response'], ['C', 'I']);
   if (has(a.dataTypes, 'employee'))
-    push('🧑‍💼', 'Employee-monitoring overreach', 'Processing employee data beyond proportionate, transparent limits.', 'low', 'med', ['consent-mgmt', 'dpia', 'data-minimization']);
+    push('🧑‍💼', 'Employee-monitoring overreach', 'Processing employee data beyond proportionate, transparent limits.', 'low', 'med', ['consent-mgmt', 'dpia', 'data-minimization'], ['C']);
 
   // ── Automated decisions & AI ──
   if (has(a.activities, 'adm')) {
-    push('⚖️', 'Unfair / unexplainable decisions', 'Solely automated decisions with significant effects trigger rights to explanation and human review.', 'med', 'high', ['human-review', 'dpia']);
-    push('📊', 'Bias & discrimination', 'Skewed data or proxy variables produce discriminatory outcomes — legal and reputational exposure.', 'med', 'high', ['bias-testing', 'human-review', 'data-quality']);
+    push('⚖️', 'Unfair / unexplainable decisions', 'Solely automated decisions with significant effects trigger rights to explanation and human review.', 'med', 'high', ['human-review', 'dpia'], ['I']);
+    push('📊', 'Bias & discrimination', 'Skewed data or proxy variables produce discriminatory outcomes — legal and reputational exposure.', 'med', 'high', ['bias-testing', 'human-review', 'data-quality'], ['I']);
   }
   if (has(a.activities, 'ai')) {
-    push('🧠', 'Training-data provenance & consent', 'Using personal data to train models without a lawful basis or a compatible purpose.', 'high', 'med', ['model-governance', 'consent-mgmt', 'dpia']);
-    push('🫥', 'Model leakage / re-identification', 'Models memorising and re-emitting personal data, or enabling re-identification of individuals.', 'low', 'high', ['model-governance', 'data-minimization', 'encryption']);
+    push('🧠', 'Training-data provenance & consent', 'Using personal data to train models without a lawful basis or a compatible purpose.', 'high', 'med', ['model-governance', 'consent-mgmt', 'dpia'], ['C', 'I']);
+    push('🫥', 'Model leakage / re-identification', 'Models memorising and re-emitting personal data, or enabling re-identification of individuals.', 'low', 'high', ['model-governance', 'data-minimization', 'encryption'], ['C']);
   }
 
   // ── Rights, consent, quality ──
   if (hasPersonal) {
-    push('📨', 'Data-subject-rights failure', "Unable to find, export or provably delete a person's data across every system on request.", 'med', 'med', ['dsar-process', 'data-inventory']);
-    push('✅', 'Consent / lawful-basis gaps', 'Processing without a documented basis, or relying on consent that isn’t freely given or specific.', 'med', 'high', ['consent-mgmt', 'dpia']);
+    push('📨', 'Data-subject-rights failure', "Unable to find, export or provably delete a person's data across every system on request.", 'med', 'med', ['dsar-process', 'data-inventory'], ['A', 'I']);
+    push('✅', 'Consent / lawful-basis gaps', 'Processing without a documented basis, or relying on consent that isn’t freely given or specific.', 'med', 'high', ['consent-mgmt', 'dpia'], ['C']);
   }
-  push('🧩', 'Poor data quality', 'Wrong, stale or duplicated data driving wrong decisions and unreliable reporting.', 'high', 'low', ['data-quality']);
+  push('🧩', 'Poor data quality', 'Wrong, stale or duplicated data driving wrong decisions and unreliable reporting.', 'high', 'low', ['data-quality'], ['I']);
 
-  // ── Jurisdictional ──
+  // ── Jurisdictional (governance — not a pure CIA risk) ──
   if (coveredCount >= 2)
-    push('🗺️', 'Conflicting multi-jurisdiction rules', 'Overlapping regimes with different definitions, timelines and thresholds to reconcile.', 'high', 'med', ['data-inventory', 'dpia']);
+    push('🗺️', 'Conflicting multi-jurisdiction rules', 'Overlapping regimes with different definitions, timelines and thresholds to reconcile.', 'high', 'med', ['data-inventory', 'dpia'], []);
   if (has(a.jurisdictions, 'other'))
-    push('❓', 'Regulatory uncertainty', 'Operating where the regime is unclear or emerging — rules can arrive fast, sometimes retroactively.', 'med', 'med', ['dpia', 'data-inventory']);
+    push('❓', 'Regulatory uncertainty', 'Operating where the regime is unclear or emerging — rules can arrive fast, sometimes retroactively.', 'med', 'med', ['dpia', 'data-inventory'], []);
 
   // ── Role ──
   if (a.role === 'processor' || a.role === 'both')
-    push('📑', 'Processing beyond instructions', "As a processor, acting outside the controller's documented instructions, or an opaque sub-processor chain.", 'low', 'med', ['vendor-mgmt', 'logging']);
+    push('📑', 'Processing beyond instructions', "As a processor, acting outside the controller's documented instructions, or an opaque sub-processor chain.", 'low', 'med', ['vendor-mgmt', 'logging'], ['C']);
 
   return risks.map((r, i) => ({ num: i + 1, ...r }));
 }
@@ -242,6 +243,14 @@ const SEV = {
   high: { label: 'High', chip: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300', cell: 'bg-rose-100 dark:bg-rose-900/25', swatch: 'bg-rose-200 dark:bg-rose-900/50' },
 };
 const DL = { low: 'Low', med: 'Med', high: 'High' };
+
+// CIA triad — which security property each risk threatens.
+const CIA = {
+  C: { name: 'Confidentiality', desc: 'only authorised people can access the data', chip: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300' },
+  I: { name: 'Integrity', desc: 'data stays accurate and untampered', chip: 'bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-300' },
+  A: { name: 'Availability', desc: 'data is accessible when needed', chip: 'bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300' },
+};
+const CIA_OPTS = [['all', 'All'], ['C', 'C'], ['I', 'I'], ['A', 'A']];
 
 export default function Navigator() {
   const [answers, setAnswers] = useState(EMPTY);
@@ -534,7 +543,15 @@ function Section({ id, title, active, open, onToggle, children }) {
 function RiskProfile({ risks }) {
   const [likF, setLikF] = useState('all');
   const [impF, setImpF] = useState('all');
-  const filtered = risks.filter((r) => (likF === 'all' || r.likelihood === likF) && (impF === 'all' || r.impact === impF));
+  const [ciaF, setCiaF] = useState('all');
+  const filtered = risks.filter(
+    (r) =>
+      (likF === 'all' || r.likelihood === likF) &&
+      (impF === 'all' || r.impact === impF) &&
+      (ciaF === 'all' || (r.cia || []).includes(ciaF))
+  );
+  const ciaCount = { C: 0, I: 0, A: 0 };
+  risks.forEach((r) => (r.cia || []).forEach((k) => (ciaCount[k] += 1)));
 
   return (
     <>
@@ -543,10 +560,24 @@ function RiskProfile({ risks }) {
       </p>
       <RiskMatrix risks={risks} />
 
+      {/* CIA triad legend + coverage */}
+      <div className="mt-4 rounded-lg bg-slate-50 p-3 text-xs text-slate-500 dark:bg-slate-900/40 dark:text-slate-400">
+        <span className="font-semibold text-slate-600 dark:text-slate-300">CIA triad — the security property each risk threatens:</span>
+        <span className="mt-1.5 flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:gap-x-4">
+          {['C', 'I', 'A'].map((k) => (
+            <span key={k}>
+              <span className={`mr-1 rounded px-1 text-[10px] font-bold ${CIA[k].chip}`}>{k}</span>
+              <span className="font-medium text-slate-600 dark:text-slate-300">{CIA[k].name}</span> — {CIA[k].desc} <span className="text-slate-400">({ciaCount[k]})</span>
+            </span>
+          ))}
+        </span>
+      </div>
+
       {/* Filters */}
-      <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 print:hidden">
+      <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 print:hidden">
         <FilterGroup label="Likelihood" value={likF} onChange={setLikF} />
         <FilterGroup label="Impact" value={impF} onChange={setImpF} />
+        <FilterGroup label="CIA" value={ciaF} onChange={setCiaF} opts={CIA_OPTS} />
         <span className="text-xs text-slate-400">Showing {filtered.length} of {risks.length}</span>
       </div>
 
@@ -570,6 +601,13 @@ function RiskProfile({ risks }) {
                   <td className="py-2.5 pr-2 text-slate-400">{r.num}</td>
                   <td className="py-2.5 pr-3">
                     <span className="font-medium text-slate-900 dark:text-slate-100">{r.icon} {r.label}</span>
+                    {r.cia?.length > 0 && (
+                      <span className="ml-1.5 inline-flex gap-0.5 align-middle">
+                        {r.cia.map((k) => (
+                          <span key={k} title={CIA[k].name} className={`rounded px-1 text-[10px] font-bold ${CIA[k].chip}`}>{k}</span>
+                        ))}
+                      </span>
+                    )}
                     <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">{r.detail}</span>
                     {r.controls?.length > 0 && (
                       <span className="mt-1.5 block">
@@ -604,13 +642,13 @@ function Pill({ className, children }) {
   return <span className={`inline-block whitespace-nowrap rounded px-1.5 py-0.5 text-[11px] font-semibold ${className}`}>{children}</span>;
 }
 
-function FilterGroup({ label, value, onChange }) {
-  const opts = [['all', 'All'], ['low', 'Low'], ['med', 'Med'], ['high', 'High']];
+function FilterGroup({ label, value, onChange, opts }) {
+  const options = opts || [['all', 'All'], ['low', 'Low'], ['med', 'Med'], ['high', 'High']];
   return (
     <div className="flex items-center gap-2">
       <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</span>
       <div className="inline-flex overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
-        {opts.map(([v, l], i) => (
+        {options.map(([v, l], i) => (
           <button
             key={v}
             type="button"
@@ -899,7 +937,7 @@ function buildMarkdown(model, a, checked) {
     L.push('## Your data-risk profile');
     L.push('_Rated by likelihood × impact (L / I)._', '');
     model.risk.forEach((f) => {
-      L.push(`- **${f.num}. ${f.label}** — _${severity(f)} risk · L:${f.likelihood} I:${f.impact}_. ${f.detail}`);
+      L.push(`- **${f.num}. ${f.label}** — _${severity(f)} risk · L:${f.likelihood} I:${f.impact} · CIA:${(f.cia || []).join('/') || '—'}_. ${f.detail}`);
       if (f.controls?.length) L.push(`  - Controls: ${f.controls.map((c) => CONTROLS[c]).join('; ')}`);
     });
     L.push('');
