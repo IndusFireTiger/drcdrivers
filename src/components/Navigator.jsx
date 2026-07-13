@@ -638,11 +638,11 @@ function PolicyPlan({ policies }) {
         Policies mandate the controls that mitigate your risks. Prioritise these — most-impactful first. Each row shows the
         controls the policy establishes and the risks it reduces (numbers match the risk table above).
       </p>
-      <div className="mt-4 overflow-x-auto">
-        <table className="w-full min-w-[40rem] border-collapse text-sm">
+      <div className="mt-4">
+        <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-400 dark:border-slate-700">
-              <th className="py-2 pr-3 font-semibold">Policy</th>
+              <th className="w-1/3 py-2 pr-3 font-semibold">Policy</th>
               <th className="py-2 pr-3 font-semibold">Controls it establishes</th>
               <th className="py-2 font-semibold">Risks mitigated</th>
             </tr>
