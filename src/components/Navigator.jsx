@@ -10,6 +10,7 @@ import {
   roleOptions,
   traitLabels,
 } from '../data/advisor.js';
+import { buildFramework } from '../data/framework.js';
 
 // ── The Navigator: five questions → the DRC laws, standards and next actions
 // that apply to your product. Client-side matcher over the instrument catalog.
@@ -415,11 +416,19 @@ function CheckGroup({ n, legend, hint, name, options, answers, onToggle }) {
 }
 
 function Results({ model, answers, checked, onToggleAction }) {
+  // Assemble the governance framework from the pieces already computed below:
+  // the risk register, the policies, and the matched obligations.
+  const policies = model.risk.length ? policyPlan(model.risk) : [];
+  const obligations = [...model.binding, ...model.recommended, ...model.watch].map((e) => e.item);
+  const framework = buildFramework(answers, { risks: model.risk, policies, obligations });
+
   // The visible container sections, in scroll order. Each is a TOC entry.
   const sections = [];
+  // The framework opens the report as its executive layer, then the sections
+  // below are its working detail (risk register, policies, obligations).
+  sections.push({ id: 'sec-framework', title: '🏛️ Your governance framework', tocLabel: 'Governance framework', body: <GovernanceFramework framework={framework} /> });
   if (model.risk.length) {
     sections.push({ id: 'sec-risk', title: '🧭 Your data-risk profile', tocLabel: 'Data-risk profile', body: <RiskProfile risks={model.risk} /> });
-    const policies = policyPlan(model.risk);
     if (policies.length) {
       sections.push({ id: 'sec-policies', title: '🛡️ Policies to implement', tocLabel: 'Policies', body: <PolicyPlan policies={policies} /> });
     }
@@ -537,6 +546,113 @@ function Section({ id, title, active, open, onToggle, children }) {
         <div className={open ? 'px-5 pb-5' : 'hidden px-5 pb-5 print:block'}>{children}</div>
       </div>
     </section>
+  );
+}
+
+// The framework's executive layer: the principles it commits to, who is
+// accountable (operating model / RACI), and how it is assured over time. It
+// assembles the risk register, policies and obligations detailed below — it
+// does not restate them.
+function GovernanceFramework({ framework }) {
+  const { principles, roles, cadence, stats } = framework;
+  const statItems = [
+    ['Principles', stats.principles],
+    ['Roles', stats.roles],
+    ['Policies', stats.policies],
+    ['Risks', stats.risks],
+    ['Obligations', stats.obligations],
+  ];
+  return (
+    <>
+      <p className="text-sm text-slate-500 dark:text-slate-400">
+        Your risks, policies and obligations — detailed in the sections below — assembled into one governance
+        framework: the principles it commits to, who is accountable, and how it stays alive.
+      </p>
+
+      {/* At-a-glance stats */}
+      <div className="mt-4 flex flex-wrap gap-2">
+        {statItems.map(([label, n]) => (
+          <span key={label} className="inline-flex items-baseline gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 dark:border-slate-700 dark:bg-slate-900/40">
+            <span className="text-base font-bold text-amber-600 dark:text-amber-400">{n}</span>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</span>
+          </span>
+        ))}
+      </div>
+
+      {/* Principles */}
+      <h4 className="mt-6 text-sm font-semibold uppercase tracking-wide text-slate-400">Guiding principles</h4>
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        {principles.map((p) => (
+          <div key={p.id} className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800">
+            <span className="block text-sm font-semibold text-slate-900 dark:text-slate-100">{p.title}</span>
+            <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">{p.detail}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Operating model — roles & accountability */}
+      <h4 className="mt-6 text-sm font-semibold uppercase tracking-wide text-slate-400">Operating model — who is accountable</h4>
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Roles are derived from the owners of your matched actions and policies. “Owns” counts the framework items each role leads.</p>
+      <div className="mt-3 overflow-x-auto">
+        <table className="w-full min-w-[34rem] border-collapse text-sm">
+          <thead>
+            <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-400 dark:border-slate-700">
+              <th className="py-2 pr-3 font-semibold">Role</th>
+              <th className="py-2 pr-3 font-semibold">Mandate</th>
+              <th className="py-2 font-semibold">Owns</th>
+            </tr>
+          </thead>
+          <tbody>
+            {roles.map((r) => (
+              <tr key={r.key} className="border-b border-slate-100 align-top dark:border-slate-800">
+                <td className="py-2.5 pr-3 font-medium text-slate-900 dark:text-slate-100">{r.name}</td>
+                <td className="py-2.5 pr-3 text-xs text-slate-500 dark:text-slate-400">{r.mandate}</td>
+                <td className="py-2.5">
+                  {r.owns.length === 0 ? (
+                    <span className="text-xs italic text-slate-400">Framework sponsor</span>
+                  ) : (
+                    <>
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{r.owns.length}</span>
+                      <span className="mt-1 flex flex-wrap gap-1">
+                        {r.owns.slice(0, 4).map((o, i) => (
+                          <span key={i} className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${o.kind === 'policy' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'}`}>{o.label}</span>
+                        ))}
+                        {r.owns.length > 4 && <span className="text-[10px] text-slate-400">+{r.owns.length - 4} more</span>}
+                      </span>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="mt-2 text-[11px] text-slate-400"><span className="rounded bg-sky-50 px-1 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300">blue</span> = an action to complete · <span className="rounded bg-emerald-50 px-1 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">green</span> = a policy to own</p>
+
+      {/* Assurance & review cadence */}
+      <h4 className="mt-6 text-sm font-semibold uppercase tracking-wide text-slate-400">Assurance & review cadence</h4>
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">A framework is a living system, not a one-off. These are the recurring checks that keep it honest.</p>
+      <div className="mt-3 overflow-x-auto">
+        <table className="w-full min-w-[30rem] border-collapse text-sm">
+          <thead>
+            <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-400 dark:border-slate-700">
+              <th className="py-2 pr-3 font-semibold">Activity</th>
+              <th className="py-2 pr-3 font-semibold">Frequency</th>
+              <th className="py-2 font-semibold">Owner</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cadence.map((c, i) => (
+              <tr key={i} className="border-b border-slate-100 align-top dark:border-slate-800">
+                <td className="py-2.5 pr-3 text-slate-700 dark:text-slate-300">{c.activity}</td>
+                <td className="py-2.5 pr-3"><Pill className="bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">{c.frequency}</Pill></td>
+                <td className="py-2.5 text-xs text-slate-500 dark:text-slate-400">{c.owner}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 
@@ -932,6 +1048,25 @@ function buildMarkdown(model, a, checked) {
   L.push('# DRC applicability report');
   L.push(`_Generated ${new Date().toISOString().slice(0, 10)} · educational guidance, not legal advice_`, '');
   L.push('## Your product', ...describeAnswers(a).split(' · ').map((p) => `- ${p}`), '');
+
+  // ── Governance framework (the executive layer) ──
+  {
+    const policies = model.risk.length ? policyPlan(model.risk) : [];
+    const obligations = [...model.binding, ...model.recommended, ...model.watch].map((e) => e.item);
+    const fw = buildFramework(a, { risks: model.risk, policies, obligations });
+    L.push('## Governance framework');
+    L.push(`_${fw.stats.principles} principles · ${fw.stats.roles} roles · ${fw.stats.policies} policies · ${fw.stats.risks} risks · ${fw.stats.obligations} obligations. The risk register, policies and obligations below are this framework's detail._`, '');
+    L.push('### Guiding principles');
+    fw.principles.forEach((p) => L.push(`- **${p.title}.** ${p.detail}`));
+    L.push('', '### Operating model — who is accountable');
+    fw.roles.forEach((r) => {
+      const owns = r.owns.length ? ` _(owns ${r.owns.length}: ${r.owns.slice(0, 4).map((o) => o.label).join('; ')}${r.owns.length > 4 ? '; …' : ''})_` : ' _(framework sponsor)_';
+      L.push(`- **${r.name}** — ${r.mandate}${owns}`);
+    });
+    L.push('', '### Assurance & review cadence');
+    fw.cadence.forEach((c) => L.push(`- **${c.frequency}** — ${c.activity} (${c.owner})`));
+    L.push('');
+  }
 
   if (model.risk.length) {
     L.push('## Your data-risk profile');
