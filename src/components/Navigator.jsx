@@ -11,6 +11,9 @@ import {
   traitLabels,
 } from '../data/advisor.js';
 import { buildFramework } from '../data/framework.js';
+import { CONTROLS, POLICIES } from '../data/policies.js';
+import { severity, dataRiskProfile } from '../data/risks.js';
+import TopNav from './TopNav.jsx';
 
 // ── The Navigator: five questions → the DRC laws, standards and next actions
 // that apply to your product. Client-side matcher over the instrument catalog.
@@ -69,136 +72,6 @@ function reasonFor(item, hits) {
   if (!hits.s.any && hits.s.hits.length) clauses.push(listPhrase(hits.s.hits.map((t) => phrases.sectors[t])));
   return clauses.length ? 'This applies because you ' + listPhrase(clauses) + '.' : 'This applies to your product or organisation.';
 }
-
-// ── data-risk profile (the DRC analog of a risk-tier classifier) ────────────
-// Likelihood / impact are rated low|med|high; severity is their product on a
-// 3×3 matrix (green ≤2, amber 3–4, red ≥6).
-const LV = { low: 1, med: 2, high: 3 };
-export function severity(r) {
-  const s = LV[r.likelihood] * LV[r.impact];
-  return s >= 6 ? 'high' : s >= 3 ? 'med' : 'low';
-}
-
-function dataRiskProfile(a) {
-  const risks = [];
-  const has = (arr, v) => arr.includes(v);
-  // push(icon, label, detail, likelihood, impact, controls[], cia[])
-  const push = (icon, label, detail, likelihood, impact, controls, cia) => risks.push({ icon, label, detail, likelihood, impact, controls, cia });
-  const hasPersonal = a.dataTypes.some((d) => ['pii', 'health', 'children', 'financial', 'employee'].includes(d));
-  const covered = a.jurisdictions.some((j) => j !== 'other');
-  const coveredCount = a.jurisdictions.filter((j) => j !== 'other').length;
-
-  // ── Breach & security ──
-  if (hasPersonal)
-    push('🔓', 'Personal-data breach', 'Unauthorised access to, or exfiltration of, the personal data you hold — the classic breach.', 'med', 'high', ['encryption', 'access-control', 'logging', 'incident-response'], ['C']);
-  if (hasPersonal && covered)
-    push('⏱️', 'Missed breach-notification clock', 'A breach starts a statutory notification clock (e.g. 72 hours under the General Data Protection Regulation, GDPR / UK GDPR). Miss it and one incident becomes two failures.', 'med', 'high', ['incident-response', 'logging'], ['C']);
-  push('🕵️', 'Insider threat & over-broad access', 'Staff, contractors or service accounts able to see far more data than their role needs.', 'med', 'med', ['access-control', 'mfa', 'logging', 'security-training'], ['C', 'I']);
-  push('🛠️', 'Weak security controls', 'Missing encryption, patching, logging or access reviews that turn a minor incident into a major one.', 'med', 'high', ['encryption', 'vuln-mgmt', 'logging', 'mfa'], ['C', 'I', 'A']);
-
-  // ── Cross-border transfer ──
-  if (has(a.activities, 'transfer'))
-    push('🌐', 'Unlawful cross-border transfer', 'Moving personal data across borders without a valid mechanism (adequacy, Standard Contractual Clauses/International Data Transfer Agreement) or breaching data-localisation rules.', 'high', 'high', ['transfer-mechanism', 'data-inventory'], ['C']);
-
-  // ── Third parties / processors ──
-  if (has(a.activities, 'thirdparty')) {
-    push('🔗', 'Third-party / supply-chain breach', 'A processor or vendor mishandles or leaks data you remain accountable for.', 'med', 'high', ['vendor-mgmt', 'logging', 'incident-response'], ['C', 'A']);
-    push('📄', 'Missing data-processing agreements', 'Sharing data without the contractual terms (DPAs / Business Associate Agreements) regulators require.', 'med', 'med', ['vendor-mgmt'], ['C']);
-  }
-
-  // ── Storage, retention & availability ──
-  if (has(a.activities, 'store')) {
-    push('🗄️', 'Over-retention', 'Keeping data longer than needed — a larger breach blast-radius and an erasure liability.', 'high', 'med', ['retention', 'data-minimization', 'data-inventory'], ['C']);
-    push('👻', 'Shadow data & unknown copies', 'Ungoverned copies in exports, backups and analytics you cannot find or delete on request.', 'high', 'med', ['data-inventory', 'retention', 'access-control'], ['C']);
-    push('💥', 'Data loss or service outage', 'Ransomware, accidental deletion or an outage makes data unavailable — no backups or recovery plan turns an incident into prolonged downtime.', 'med', 'high', ['backup', 'incident-response', 'logging'], ['A']);
-  }
-
-  // ── Data-type-specific ──
-  if (has(a.dataTypes, 'health'))
-    push('🩺', 'Special-category (health) mishandling', 'Health data needs an extra lawful condition and stronger safeguards; ordinary handling is non-compliant.', 'med', 'high', ['consent-mgmt', 'encryption', 'access-control', 'dpia'], ['C']);
-  if (has(a.dataTypes, 'children'))
-    push('🧒', "Children's-data / age-assurance failure", "Collecting children's data without verifiable parental consent or age-appropriate design.", 'med', 'high', ['age-verification', 'consent-mgmt', 'data-minimization'], ['C']);
-  if (has(a.dataTypes, 'cardholder'))
-    push('💳', 'Cardholder-data compromise', 'Card data in scope brings the Payment Card Industry Data Security Standard (PCI DSS); storing the PAN/CVV or weak controls invites fraud and fines.', 'med', 'high', ['pci-scope', 'encryption', 'access-control'], ['C', 'I']);
-  if (has(a.dataTypes, 'financial'))
-    push('🏦', 'Financial-data misuse / fraud', 'Account records are a high-value target and an anti-fraud / anti-money-laundering concern.', 'med', 'high', ['access-control', 'logging', 'incident-response'], ['C', 'I']);
-  if (has(a.dataTypes, 'employee'))
-    push('🧑‍💼', 'Employee-monitoring overreach', 'Processing employee data beyond proportionate, transparent limits.', 'low', 'med', ['consent-mgmt', 'dpia', 'data-minimization'], ['C']);
-
-  // ── Automated decisions & AI ──
-  if (has(a.activities, 'adm')) {
-    push('⚖️', 'Unfair / unexplainable decisions', 'Solely automated decisions with significant effects trigger rights to explanation and human review.', 'med', 'high', ['human-review', 'dpia'], ['I']);
-    push('📊', 'Bias & discrimination', 'Skewed data or proxy variables produce discriminatory outcomes — legal and reputational exposure.', 'med', 'high', ['bias-testing', 'human-review', 'data-quality'], ['I']);
-  }
-  if (has(a.activities, 'ai')) {
-    push('🧠', 'Training-data provenance & consent', 'Using personal data to train models without a lawful basis or a compatible purpose.', 'high', 'med', ['model-governance', 'consent-mgmt', 'dpia'], ['C', 'I']);
-    push('🫥', 'Model leakage / re-identification', 'Models memorising and re-emitting personal data, or enabling re-identification of individuals.', 'low', 'high', ['model-governance', 'data-minimization', 'encryption'], ['C']);
-  }
-
-  // ── Rights, consent, quality ──
-  if (hasPersonal) {
-    push('📨', 'Data-subject-rights failure', "Unable to find, export or provably delete a person's data across every system on request.", 'med', 'med', ['dsar-process', 'data-inventory'], ['A', 'I']);
-    push('✅', 'Consent / lawful-basis gaps', 'Processing without a documented basis, or relying on consent that isn’t freely given or specific.', 'med', 'high', ['consent-mgmt', 'dpia'], ['C']);
-  }
-  push('🧩', 'Poor data quality', 'Wrong, stale or duplicated data driving wrong decisions and unreliable reporting.', 'high', 'low', ['data-quality'], ['I']);
-
-  // ── Jurisdictional (governance — not a pure CIA risk) ──
-  if (coveredCount >= 2)
-    push('🗺️', 'Conflicting multi-jurisdiction rules', 'Overlapping regimes with different definitions, timelines and thresholds to reconcile.', 'high', 'med', ['data-inventory', 'dpia'], []);
-  if (has(a.jurisdictions, 'other'))
-    push('❓', 'Regulatory uncertainty', 'Operating where the regime is unclear or emerging — rules can arrive fast, sometimes retroactively.', 'med', 'med', ['dpia', 'data-inventory'], []);
-
-  // ── Role ──
-  if (a.role === 'processor' || a.role === 'both')
-    push('📑', 'Processing beyond instructions', "As a processor, acting outside the controller's documented instructions, or an opaque sub-processor chain.", 'low', 'med', ['vendor-mgmt', 'logging'], ['C']);
-
-  return risks.map((r, i) => ({ num: i + 1, ...r }));
-}
-
-// ── Control catalog: id → human name. Shared by risks and policies. ─────────
-const CONTROLS = {
-  encryption: 'Encryption (at rest & in transit)',
-  'access-control': 'Access control & least privilege',
-  mfa: 'Multi-factor authentication',
-  logging: 'Logging & monitoring',
-  'vuln-mgmt': 'Vulnerability & patch management',
-  backup: 'Backup & recovery',
-  retention: 'Retention schedule & secure deletion',
-  'data-inventory': 'Data inventory, mapping & classification',
-  'dsar-process': 'Data-subject-request fulfilment',
-  'consent-mgmt': 'Consent & lawful-basis management',
-  'vendor-mgmt': 'Vendor due diligence & data-processing agreements',
-  'transfer-mechanism': 'Cross-border transfer mechanism',
-  dpia: 'Data Protection Impact Assessment (DPIA)',
-  'incident-response': 'Incident-response & breach runbook',
-  'security-training': 'Security & privacy awareness training',
-  'age-verification': 'Age verification & parental consent',
-  'pci-scope': 'PCI scope reduction & tokenisation',
-  'human-review': 'Human oversight of automated decisions',
-  'bias-testing': 'Bias & fairness testing',
-  'data-quality': 'Data-quality controls (validation, de-duplication)',
-  'model-governance': 'AI / model governance & data provenance',
-  'data-minimization': 'Data minimisation',
-};
-
-// ── Policy catalog: each policy establishes a set of controls. ──────────────
-const POLICIES = [
-  { id: 'infosec', name: 'Information Security Policy', desc: 'Baseline technical & organisational security measures.', controls: ['encryption', 'access-control', 'mfa', 'logging', 'vuln-mgmt', 'backup'] },
-  { id: 'access', name: 'Access Control Policy', desc: 'Who may access what, and how access is granted & reviewed.', controls: ['access-control', 'mfa', 'logging'] },
-  { id: 'retention', name: 'Data Retention & Disposal Policy', desc: 'How long data is kept and how it is securely deleted.', controls: ['retention', 'data-minimization', 'data-inventory'] },
-  { id: 'classification', name: 'Data Classification & Handling Policy', desc: 'Labelling data by sensitivity, with handling rules per label.', controls: ['data-inventory', 'encryption', 'access-control'] },
-  { id: 'privacy', name: 'Privacy Policy & Notice', desc: 'How personal data is collected, used and shared, and on what basis.', controls: ['consent-mgmt', 'dsar-process', 'data-minimization'] },
-  { id: 'dsar', name: 'Data-Subject Rights Policy', desc: 'The process to fulfil access, correction and erasure requests.', controls: ['dsar-process', 'data-inventory'] },
-  { id: 'consent', name: 'Consent Management Policy', desc: 'Capturing, recording and withdrawing consent (incl. children).', controls: ['consent-mgmt', 'age-verification'] },
-  { id: 'vendor', name: 'Third-Party / Vendor Management Policy', desc: 'Due diligence and contracts for processors & suppliers.', controls: ['vendor-mgmt', 'logging'] },
-  { id: 'transfer', name: 'International Data Transfer Policy', desc: 'Lawful mechanisms for moving data across borders.', controls: ['transfer-mechanism', 'data-inventory'] },
-  { id: 'incident', name: 'Incident Response & Breach Notification Policy', desc: 'Detect, assess, contain and notify within statutory clocks.', controls: ['incident-response', 'logging'] },
-  { id: 'dpia', name: 'DPIA / Risk Assessment Policy', desc: 'When and how to assess high-risk processing before launch.', controls: ['dpia'] },
-  { id: 'awareness', name: 'Acceptable Use & Security Awareness Policy', desc: 'Staff responsibilities and recurring training.', controls: ['security-training', 'access-control'] },
-  { id: 'ai', name: 'Responsible AI & Automated-Decision Policy', desc: 'Oversight, fairness and data provenance for AI / automated decisions.', controls: ['human-review', 'bias-testing', 'model-governance'] },
-  { id: 'quality', name: 'Data Quality & Governance Policy', desc: 'Accuracy, validation and ownership of data.', controls: ['data-quality', 'data-inventory'] },
-  { id: 'pci', name: 'Payment Card (PCI DSS) Policy', desc: 'Protecting cardholder data and reducing PCI scope.', controls: ['pci-scope', 'encryption', 'access-control'] },
-];
 
 // Recommend the policies whose controls address the active risks; annotate each
 // with the controls it establishes (that are relevant) and the risks it mitigates.
@@ -320,12 +193,9 @@ export default function Navigator() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-10">
-      <div className="mx-auto max-w-2xl">
-      <nav className="flex flex-wrap gap-x-4 gap-y-1 text-sm print:hidden">
-        <a href="/atlas" className="text-slate-500 hover:text-amber-600 dark:text-slate-400">🌍 Atlas</a>
-        <a href="/road" className="text-slate-500 hover:text-amber-600 dark:text-slate-400">🛣️ The DRC road (lessons)</a>
-      </nav>
+    <div className="mx-auto max-w-6xl px-5 py-10">
+      <div className="max-w-3xl">
+      <TopNav current="navigator" />
       <p className="mt-4 text-sm font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400 print:hidden">🧭 The Navigator</p>
       <h1 className="mt-1 text-3xl font-bold text-slate-900 dark:text-slate-100 print:hidden">What applies to my product or organisation?</h1>
       <p className="mt-2 text-slate-600 dark:text-slate-300 print:hidden">

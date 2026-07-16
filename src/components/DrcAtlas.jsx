@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { catalog, regionGroupOrder, lessonSlugFor } from '../data/drc-catalog.js';
 import { roadStops } from '../data/lessons.js';
 import WorldMap from './WorldMap.jsx';
+import TopNav from './TopNav.jsx';
 
 const TYPE_ORDER = ['Regulation', 'Law / Statute', 'Framework', 'Standard', 'Program / Cert'];
 
@@ -55,10 +56,10 @@ export default function DrcAtlas() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-12">
-      <header className="text-center">
-        <a href="/road" className="text-sm text-slate-500 hover:text-amber-600 dark:text-slate-400">← The road</a>
-        <p className="mt-3 text-sm font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">The DRC Atlas</p>
+    <div className="mx-auto max-w-6xl px-5 py-10">
+      <TopNav current="atlas" />
+      <header className="mt-6 text-center">
+        <p className="text-sm font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">The DRC Atlas</p>
         <h1 className="mt-2 text-4xl font-bold text-slate-900 dark:text-slate-100">
           Regulations, laws, frameworks &amp; standards — worldwide
         </h1>

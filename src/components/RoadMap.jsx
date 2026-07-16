@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { isComplete, completedCount } from '../lib/progress.js';
+import TopNav from './TopNav.jsx';
 
 // The home screen: a winding "roadmap" road. Milestone markers sit on an asphalt
 // road with a dashed centre line; cards alternate left/right and animate on hover.
@@ -32,8 +33,10 @@ export default function RoadMap({ stops }) {
   ]);
 
   return (
-    <div className="mx-auto max-w-3xl px-5 py-12">
-      <header className="text-center">
+    <div className="mx-auto max-w-6xl px-5 py-10">
+      <TopNav current="road" />
+      <div className="mx-auto max-w-3xl">
+      <header className="mt-6 text-center">
         <p className="text-sm font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">DRCDrivers</p>
         <h1 className="mt-2 text-4xl font-bold text-slate-900 dark:text-slate-100">Drive the road of Data Risk &amp; Compliance</h1>
         <p className="mx-auto mt-3 max-w-xl text-slate-600 dark:text-slate-300">
@@ -169,17 +172,12 @@ export default function RoadMap({ stops }) {
       </div>
 
       <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
-        <a href="/" className="text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400">
-          🧭 What applies to my product or organisation?
-        </a>
-        <a href="/atlas" className="text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400">
-          🌍 Explore the global DRC Atlas
-        </a>
         <a href="/cheatsheet" className="text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400">
           📄 Jump to the one-page cheat-sheet
         </a>
       </div>
       <p className="mt-2 text-center text-xs text-slate-400">Progress is saved in your browser.</p>
+      </div>
     </div>
   );
 }
