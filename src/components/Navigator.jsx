@@ -209,7 +209,7 @@ export default function Navigator() {
   return (
     <>
       <p className="mt-4 text-sm font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400 print:hidden">The Navigator</p>
-      <h1 className="mt-1 text-3xl font-bold text-slate-900 dark:text-slate-100 print:hidden">What applies to my product or organisation?</h1>
+      <h1 className="mt-1 text-3xl font-bold text-slate-900 dark:text-slate-100 print:hidden">What applies to your organisation?</h1>
       <p className="mt-2 max-w-3xl text-slate-600 dark:text-slate-300 print:hidden">
         Answer five short questions about your product or organisation and we'll map the Data Risk &amp;
         Compliance (DRC) laws, standards and obligations most likely to apply — with concrete next steps.
