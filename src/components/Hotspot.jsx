@@ -49,7 +49,7 @@ export default function Hotspot({
           const isActive = s.id === activeId;
           const isVisited = visited[s.id];
           const circleTone = isActive
-            ? 'fill-blue-500 stroke-blue-700'
+            ? 'fill-yellow-500 stroke-yellow-700'
             : isVisited
               ? 'fill-emerald-100 stroke-emerald-400 dark:fill-emerald-900'
               : 'fill-white stroke-slate-300 dark:fill-slate-800 dark:stroke-slate-600';

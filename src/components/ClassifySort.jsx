@@ -35,7 +35,7 @@ export default function ClassifySort({ prompt, buckets, items, onResolved }) {
               key={it.label}
               onClick={() => setSelected(active ? null : idx)}
               className={`rounded-full border px-3 py-1.5 text-sm transition dark:text-slate-200 ${
-                active ? 'border-blue-500 bg-blue-100 dark:bg-blue-900/40' : 'border-slate-300 hover:border-blue-400 dark:border-slate-600'
+                active ? 'border-yellow-500 bg-yellow-100 dark:bg-yellow-900/40' : 'border-slate-300 hover:border-yellow-400 dark:border-slate-600'
               }`}
             >
               {it.label}
@@ -54,7 +54,7 @@ export default function ClassifySort({ prompt, buckets, items, onResolved }) {
           <button
             key={b}
             onClick={() => place(b)}
-            className="min-h-[88px] rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-3 text-left transition hover:border-blue-400 dark:border-slate-600 dark:bg-slate-900/40"
+            className="min-h-[88px] rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-3 text-left transition hover:border-yellow-400 dark:border-slate-600 dark:bg-slate-900/40"
           >
             <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{b}</span>
             <div className="mt-2 space-y-1">

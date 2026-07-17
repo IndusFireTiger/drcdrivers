@@ -118,13 +118,13 @@ export default function RoadMap({ stops }) {
                 style={{ left, top: '50%' }}
               >
                 {/* hover pulse ring */}
-                <span className="absolute inset-0 rounded-full bg-blue-400/40 opacity-0 transition group-hover:animate-ping group-hover:opacity-100" />
+                <span className="absolute inset-0 rounded-full bg-yellow-400/40 opacity-0 transition group-hover:animate-ping group-hover:opacity-100" />
                 <span
                   className={`relative flex h-14 w-14 items-center justify-center rounded-full border-4 text-2xl shadow transition-transform duration-200 group-hover:scale-110 ${
                     completed
                       ? 'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/50'
                       : clickable
-                        ? 'border-blue-400 bg-white dark:bg-slate-800'
+                        ? 'border-yellow-400 bg-white dark:bg-slate-800'
                         : 'border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800'
                   }`}
                 >
@@ -140,12 +140,12 @@ export default function RoadMap({ stops }) {
                 <span
                   className={`block rounded-xl border p-4 shadow-sm transition-all duration-200 group-hover:-translate-y-1 group-hover:shadow-xl ${
                     clickable
-                      ? 'border-slate-200 bg-white group-hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800'
+                      ? 'border-slate-200 bg-white group-hover:border-yellow-400 dark:border-slate-700 dark:bg-slate-800'
                       : 'border-dashed border-slate-200 bg-slate-50 opacity-70 dark:border-slate-700 dark:bg-slate-800/50'
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-yellow-100 text-xs font-bold text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300">
                       {s.id}
                     </span>
                     <span className="font-semibold text-slate-900 dark:text-slate-100">{s.title}</span>
@@ -155,7 +155,7 @@ export default function RoadMap({ stops }) {
                     {completed ? (
                       <span className="text-emerald-600 dark:text-emerald-400">✓ Cleared</span>
                     ) : clickable ? (
-                      <span className="text-blue-600 transition-transform group-hover:translate-x-0.5 dark:text-blue-400">
+                      <span className="text-yellow-600 transition-transform group-hover:translate-x-0.5 dark:text-yellow-400">
                         Start →
                       </span>
                     ) : (

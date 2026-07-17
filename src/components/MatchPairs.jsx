@@ -48,8 +48,8 @@ export default function MatchPairs({ prompt, leftLabel, rightLabel, pairs, onRes
                     done
                       ? 'border-emerald-400 bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
                       : active
-                        ? 'border-blue-500 bg-blue-100 dark:bg-blue-900/40'
-                        : 'border-slate-300 hover:border-blue-400 dark:border-slate-600'
+                        ? 'border-yellow-500 bg-yellow-100 dark:bg-yellow-900/40'
+                        : 'border-slate-300 hover:border-yellow-400 dark:border-slate-600'
                   }`}
                 >
                   {p.left}
@@ -71,7 +71,7 @@ export default function MatchPairs({ prompt, leftLabel, rightLabel, pairs, onRes
                   className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition dark:text-slate-200 ${
                     done
                       ? 'border-emerald-400 bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
-                      : 'border-slate-300 hover:border-blue-400 dark:border-slate-600'
+                      : 'border-slate-300 hover:border-yellow-400 dark:border-slate-600'
                   }`}
                 >
                   {pairs[pairIdx].right}

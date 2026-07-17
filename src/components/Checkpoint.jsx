@@ -28,7 +28,7 @@ export default function Checkpoint({ questions, onPassed }) {
               {q.options.map((opt, oi) => {
                 const isChosen = chosen === oi;
                 const correct = oi === q.answerIndex;
-                let tone = 'border-slate-200 hover:border-blue-400 hover:bg-blue-50 dark:border-slate-600 dark:hover:bg-blue-900/20';
+                let tone = 'border-slate-200 hover:border-yellow-400 hover:bg-yellow-50 dark:border-slate-600 dark:hover:bg-yellow-900/20';
                 if (isChosen && correct) tone = 'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/30';
                 else if (isChosen && !correct) tone = 'border-rose-400 bg-rose-50 dark:bg-rose-900/30';
                 return (
