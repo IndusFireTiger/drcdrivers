@@ -131,6 +131,7 @@ export default function Navigator() {
   const [submitted, setSubmitted] = useState(null); // the answers snapshot that produced results
   const [checked, setChecked] = useState({}); // { "inst:act": true }
   const [showEmptyHint, setShowEmptyHint] = useState(false);
+  const [questionsOpen, setQuestionsOpen] = useState(false); // collapsed by default: presets first
 
   // restore last session
   useEffect(() => {
@@ -192,18 +193,19 @@ export default function Navigator() {
     });
   }
 
+  const answered = countAnswers(answers);
+
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10">
-      <div className="max-w-3xl">
+    <div className="mx-auto w-full max-w-[120rem] px-6 py-10">
       <TopNav current="navigator" />
       <p className="mt-4 text-sm font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400 print:hidden">🧭 The Navigator</p>
       <h1 className="mt-1 text-3xl font-bold text-slate-900 dark:text-slate-100 print:hidden">What applies to my product or organisation?</h1>
-      <p className="mt-2 text-slate-600 dark:text-slate-300 print:hidden">
+      <p className="mt-2 max-w-3xl text-slate-600 dark:text-slate-300 print:hidden">
         Answer five short questions about your product or organisation and we'll map the Data Risk &amp;
         Compliance (DRC) laws, standards and obligations most likely to apply — with concrete next steps.
       </p>
 
-      <div className="mt-5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-slate-700 dark:border-amber-800/60 dark:bg-amber-900/20 dark:text-slate-200 print:hidden">
+      <div className="mt-5 max-w-3xl rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-slate-700 dark:border-amber-800/60 dark:bg-amber-900/20 dark:text-slate-200 print:hidden">
         <strong>⚠️ Educational guidance, not legal advice.</strong> This is a learning aid built on the{' '}
         <a href="/atlas" className="font-medium text-amber-700 underline dark:text-amber-400">Data Risk &amp; Compliance (DRC) Atlas</a>. It isn't
         exhaustive. Verify everything against the official source and qualified counsel.
@@ -212,7 +214,7 @@ export default function Navigator() {
       {/* presets */}
       <section className="mt-6 print:hidden">
         <p className="text-sm text-slate-500 dark:text-slate-400">Not sure where to start? Try a hypothetical product:</p>
-        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+        <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {caseStudies.map((cs) => (
             <button
               key={cs.id}
@@ -227,37 +229,57 @@ export default function Navigator() {
         </div>
       </section>
 
-      {/* questionnaire */}
-      <form onSubmit={submit} className="mt-6 space-y-6 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800 print:hidden">
-        <CheckGroup n={1} legend="Where do you operate or have users?" hint="select all" name="jurisdictions" options={jurisdictionOptions} answers={answers} onToggle={toggle} />
-        <CheckGroup n={2} legend="What sector are you in?" hint="select all" name="sectors" options={sectorOptions} answers={answers} onToggle={toggle} />
-        <CheckGroup n={3} legend="What data do you handle?" hint="select all" name="dataTypes" options={dataOptions} answers={answers} onToggle={toggle} />
-        <CheckGroup n={4} legend="What do you do with it?" hint="select all" name="activities" options={activityOptions} answers={answers} onToggle={toggle} />
+      {/* questionnaire — collapsed by default so presets and the report lead */}
+      <section className="mt-6 print:hidden">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+          <button
+            type="button"
+            onClick={() => setQuestionsOpen((o) => !o)}
+            className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
+            aria-expanded={questionsOpen}
+            aria-controls="navigator-questions"
+          >
+            <span>
+              <span className="block text-lg font-semibold text-slate-800 dark:text-slate-200">📝 Tell us about your product</span>
+              <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
+                Five questions — jurisdictions, sector, data, activities and your role
+                {answered > 0 && <span className="ml-1 text-amber-600 dark:text-amber-400">· {answered} selected</span>}
+              </span>
+            </span>
+            <span className={`shrink-0 text-slate-400 transition-transform ${questionsOpen ? 'rotate-90' : ''}`}>▶</span>
+          </button>
 
-        <fieldset>
-          <legend className="font-semibold text-slate-800 dark:text-slate-200">
-            <span className="mr-1 text-amber-600 dark:text-amber-400">5 ·</span> What is your role?
-          </legend>
-          <div className="mt-3 space-y-2">
-            {roleOptions.map((o) => (
-              <label key={o.value} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                <input type="radio" name="role" value={o.value} checked={answers.role === o.value} onChange={() => setAnswers((a) => ({ ...a, role: o.value }))} className="mt-0.5 accent-amber-500" />
-                {o.label}
-              </label>
-            ))}
-          </div>
-        </fieldset>
+          <form id="navigator-questions" onSubmit={submit} className={questionsOpen ? 'space-y-6 px-5 pb-5' : 'hidden'}>
+            <CheckGroup n={1} legend="Where do you operate or have users?" hint="select all" name="jurisdictions" options={jurisdictionOptions} answers={answers} onToggle={toggle} />
+            <CheckGroup n={2} legend="What sector are you in?" hint="select all" name="sectors" options={sectorOptions} answers={answers} onToggle={toggle} />
+            <CheckGroup n={3} legend="What data do you handle?" hint="select all" name="dataTypes" options={dataOptions} answers={answers} onToggle={toggle} />
+            <CheckGroup n={4} legend="What do you do with it?" hint="select all" name="activities" options={activityOptions} answers={answers} onToggle={toggle} />
 
-        <div className="flex flex-wrap gap-3 pt-1">
-          <button type="submit" className="rounded-lg bg-amber-500 px-5 py-2.5 font-medium text-white hover:bg-amber-600">Show what applies →</button>
-          <button type="button" onClick={clear} className="rounded-lg border border-slate-300 px-5 py-2.5 font-medium text-slate-600 hover:border-amber-400 dark:border-slate-600 dark:text-slate-300">Clear</button>
+            <fieldset>
+              <legend className="font-semibold text-slate-800 dark:text-slate-200">
+                <span className="mr-1 text-amber-600 dark:text-amber-400">5 ·</span> What is your role?
+              </legend>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {roleOptions.map((o) => (
+                  <label key={o.value} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+                    <input type="radio" name="role" value={o.value} checked={answers.role === o.value} onChange={() => setAnswers((a) => ({ ...a, role: o.value }))} className="mt-0.5 accent-amber-500" />
+                    {o.label}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <div className="flex flex-wrap gap-3 pt-1">
+              <button type="submit" className="rounded-lg bg-amber-500 px-5 py-2.5 font-medium text-white hover:bg-amber-600">Show what applies →</button>
+              <button type="button" onClick={clear} className="rounded-lg border border-slate-300 px-5 py-2.5 font-medium text-slate-600 hover:border-amber-400 dark:border-slate-600 dark:text-slate-300">Clear</button>
+            </div>
+          </form>
         </div>
-      </form>
+      </section>
 
       {showEmptyHint && (
         <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Select at least one option above (or pick an example), then choose <em>Show what applies</em>.</p>
       )}
-      </div>
 
       {/* results */}
       {model && <Results model={model} answers={submitted} checked={checked} onToggleAction={toggleAction} />}
@@ -273,7 +295,7 @@ function CheckGroup({ n, legend, hint, name, options, answers, onToggle }) {
         <span className="mr-1 text-amber-600 dark:text-amber-400">{n} ·</span> {legend}
         {hint && <span className="ml-1 text-xs font-normal text-slate-400">({hint})</span>}
       </legend>
-      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+      <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {options.map((o) => (
           <label key={o.value} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
             <input type="checkbox" checked={answers[name].includes(o.value)} onChange={() => onToggle(name, o.value)} className="mt-0.5 accent-amber-500" />
@@ -363,7 +385,7 @@ function Results({ model, answers, checked, onToggleAction }) {
         Educational guidance, not legal advice — verify every item against its official source and qualified counsel.
       </div>
 
-      <div className="mt-6 lg:flex lg:justify-center lg:gap-8">
+      <div className="mt-6 lg:flex lg:gap-8">
         {/* Table of contents */}
         <nav className="mb-6 shrink-0 lg:sticky lg:top-6 lg:mb-0 lg:h-max lg:w-52 print:hidden" aria-label="On this page">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">On this page</p>
@@ -387,7 +409,7 @@ function Results({ model, answers, checked, onToggleAction }) {
         </nav>
 
         {/* Report body */}
-        <div className="min-w-0 flex-1 space-y-6 lg:max-w-2xl">
+        <div className="min-w-0 flex-1 space-y-6">
           {sections.map((s) => (
             <Section key={s.id} id={s.id} title={s.title} active={active === s.id} open={!collapsed.has(s.id)} onToggle={() => toggleOne(s.id)}>
               {s.body}
@@ -878,6 +900,12 @@ function ResultCardBody({ item, reason, checked, onToggleAction, lessonSlug }) {
 // ── pure helpers ─────────────────────────────────────────────────────────────
 function hasAny(a) {
   return Boolean(a.jurisdictions.length || a.sectors.length || a.dataTypes.length || a.activities.length);
+}
+
+// How many options are ticked — surfaced on the collapsed questionnaire header so
+// restored or preset answers are visible without opening it.
+function countAnswers(a) {
+  return a.jurisdictions.length + a.sectors.length + a.dataTypes.length + a.activities.length;
 }
 
 function computeModel(a) {
