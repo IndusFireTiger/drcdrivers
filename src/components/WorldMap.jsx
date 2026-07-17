@@ -1,6 +1,6 @@
 // World map built on the illustrated map image. Clickable continent hotspots
 // (positioned as % of the image) select a region group and filter the atlas.
-// Hovering a region's count badge pops an animated list of its top instruments.
+// Hovering a region's count badge pops an animated list of all its instruments.
 // "Global" instruments aren't a place, so they get a pill above the map.
 // Asia-Pacific = the Asia hotspot + the Australia hotspot (both select it).
 
@@ -38,7 +38,7 @@ export default function WorldMap({ regionItems, selected, onSelect }) {
               {countOf('Global')}
             </span>
           </button>
-          <Popover title="Top global standards" items={regionItems['Global'] || []} placement="below" />
+          <Popover title="Global standards" items={regionItems['Global'] || []} placement="below" />
         </span>
       </div>
 
@@ -61,7 +61,7 @@ export default function WorldMap({ regionItems, selected, onSelect }) {
               <span
                 className={`absolute inset-0 rounded-2xl transition ${
                   isSel
-                    ? 'bg-amber-400/30 ring-2 ring-amber-500'
+                    ? 'bg-blue-400/30 ring-2 ring-blue-500'
                     : 'ring-0 group-hover:bg-white/20 group-hover:ring-2 group-hover:ring-white/70'
                 }`}
               />
@@ -76,12 +76,12 @@ export default function WorldMap({ regionItems, selected, onSelect }) {
                       className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-bold shadow transition group-hover/badge:scale-110 ${
                         n === 0 ? 'opacity-50 ' : ''
                       }${
-                        isSel ? 'bg-amber-500 text-white' : 'bg-white/90 text-slate-700 dark:bg-slate-900/85 dark:text-slate-100'
+                        isSel ? 'bg-blue-500 text-white' : 'bg-white/90 text-slate-700 dark:bg-slate-900/85 dark:text-slate-100'
                       }`}
                     >
                       {h.short} · {n}
                     </span>
-                    <Popover title={`Top in ${h.group}`} items={regionItems[h.group] || []} placement={h.by < 35 ? 'below' : 'above'} />
+                    <Popover title={h.group} items={regionItems[h.group] || []} placement={h.by < 35 ? 'below' : 'above'} />
                   </span>
                 </span>
               )}
@@ -93,7 +93,7 @@ export default function WorldMap({ regionItems, selected, onSelect }) {
       <p className="mt-2 text-center text-xs text-slate-400">
         Click a region to filter, or hover a badge to preview.{' '}
         {selected !== 'All' && (
-          <button onClick={() => onSelect('All')} className="font-medium text-amber-600 hover:underline dark:text-amber-400">
+          <button onClick={() => onSelect('All')} className="font-medium text-blue-600 hover:underline dark:text-blue-400">
             Showing: {selected} ✕
           </button>
         )}
@@ -102,9 +102,12 @@ export default function WorldMap({ regionItems, selected, onSelect }) {
   );
 }
 
-// Animated hover list of the top instruments for a region.
+// Animated hover list of every instrument in a region — the list is complete, so
+// nothing is rolled into a "+N more" tail.
 function Popover({ title, items, placement }) {
-  const top = items.slice(0, 6);
+  // The reveal is staggered, but the total is capped so a long region (13 global
+  // standards) doesn't take three times as long to appear as a short one.
+  const step = Math.min(45, 360 / Math.max(items.length, 1));
   const pos =
     placement === 'below'
       ? 'top-full mt-2 origin-top'
@@ -117,24 +120,22 @@ function Popover({ title, items, placement }) {
     >
       <span className="block rounded-xl border border-slate-200 bg-white/95 p-2.5 text-left shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/95">
         <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-slate-400">{title}</span>
-        {top.length === 0 ? (
+        {items.length === 0 ? (
           <span className="block text-xs text-slate-400">No matches for the current filters.</span>
         ) : (
           <span className="block space-y-1">
-            {top.map((c, idx) => (
+            {items.map((c, idx) => (
               <span
                 key={c.id}
                 className="flex items-center gap-2 opacity-0 group-hover/badge:opacity-100"
-                style={{ transition: 'opacity 200ms ease', transitionDelay: `${80 + idx * 45}ms` }}
+                style={{ transition: 'opacity 200ms ease', transitionDelay: `${80 + idx * step}ms` }}
               >
+                {/* Amber stays: matches the Atlas Global/Region-specific colour code. */}
                 <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${c.scope === 'Global' ? 'bg-sky-500' : 'bg-amber-500'}`} />
                 <span className="truncate text-xs font-medium text-slate-700 dark:text-slate-200">{c.name}</span>
                 <span className="ml-auto shrink-0 text-[10px] text-slate-400">{c.type.replace(' / Statute', '')}</span>
               </span>
             ))}
-            {items.length > top.length && (
-              <span className="block pt-0.5 text-[10px] text-slate-400">+{items.length - top.length} more</span>
-            )}
           </span>
         )}
       </span>

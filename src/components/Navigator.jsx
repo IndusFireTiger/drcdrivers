@@ -13,7 +13,6 @@ import {
 import { buildFramework } from '../data/framework.js';
 import { CONTROLS, POLICIES } from '../data/policies.js';
 import { severity, dataRiskProfile } from '../data/risks.js';
-import TopNav from './TopNav.jsx';
 
 // ── The Navigator: five questions → the DRC laws, standards and next actions
 // that apply to your product. Client-side matcher over the instrument catalog.
@@ -107,12 +106,15 @@ function baselineTraits(pool) {
 const TIER_CLASS = {
   binding: 'border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-700 dark:bg-rose-900/30 dark:text-rose-300',
   recommended: 'border-sky-300 bg-sky-50 text-sky-700 dark:border-sky-700 dark:bg-sky-900/30 dark:text-sky-300',
+  // Amber stays: this is a three-way taxonomy (binding / recommended / watch) and
+  // blue would collide with `recommended`'s sky. Not the brand accent.
   watch: 'border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
 };
 
 // Severity colours for the risk matrix + list, and short axis labels.
 const SEV = {
   low: { label: 'Low', chip: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300', cell: 'bg-emerald-100 dark:bg-emerald-900/25', swatch: 'bg-emerald-200 dark:bg-emerald-900/50' },
+  // Amber stays: low/med/high is a traffic light, not the brand accent.
   med: { label: 'Medium', chip: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300', cell: 'bg-amber-100 dark:bg-amber-900/25', swatch: 'bg-amber-200 dark:bg-amber-900/50' },
   high: { label: 'High', chip: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300', cell: 'bg-rose-100 dark:bg-rose-900/25', swatch: 'bg-rose-200 dark:bg-rose-900/50' },
 };
@@ -131,7 +133,10 @@ export default function Navigator() {
   const [submitted, setSubmitted] = useState(null); // the answers snapshot that produced results
   const [checked, setChecked] = useState({}); // { "inst:act": true }
   const [showEmptyHint, setShowEmptyHint] = useState(false);
-  const [questionsOpen, setQuestionsOpen] = useState(false); // collapsed by default: presets first
+  const [questionsOpen, setQuestionsOpen] = useState(false); // collapsed by default
+  // Open until a report exists: once you've seen what applies, the case studies
+  // fold away rather than sitting between you and the report.
+  const [presetsOpen, setPresetsOpen] = useState(true);
 
   // restore last session
   useEffect(() => {
@@ -140,6 +145,7 @@ export default function Navigator() {
       if (saved && hasAny(saved)) {
         setAnswers(saved);
         setSubmitted(saved);
+        setPresetsOpen(false); // a restored session already has a report showing
       }
       const c = JSON.parse(localStorage.getItem(SAVE_KEY + ':actions') || '{}');
       setChecked(c);
@@ -166,12 +172,14 @@ export default function Navigator() {
     setShowEmptyHint(false);
     localStorage.setItem(SAVE_KEY, JSON.stringify(answers));
     setSubmitted(answers);
+    setPresetsOpen(false); // the report is what matters now
   }
 
   function clear() {
     setAnswers(EMPTY);
     setSubmitted(null);
     setShowEmptyHint(false);
+    setPresetsOpen(true); // back to square one — offer the case studies again
     localStorage.removeItem(SAVE_KEY);
   }
 
@@ -194,42 +202,27 @@ export default function Navigator() {
   }
 
   const answered = countAnswers(answers);
+  // Highlight against the live answers, not the submitted ones, so the selected
+  // card releases as soon as an answer is edited away from the case study.
+  const activePreset = presetFor(answers);
 
   return (
-    <div className="mx-auto w-full max-w-[120rem] px-6 py-10">
-      <TopNav current="navigator" />
-      <p className="mt-4 text-sm font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400 print:hidden">🧭 The Navigator</p>
+    <>
+      <p className="mt-4 text-sm font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400 print:hidden">The Navigator</p>
       <h1 className="mt-1 text-3xl font-bold text-slate-900 dark:text-slate-100 print:hidden">What applies to my product or organisation?</h1>
       <p className="mt-2 max-w-3xl text-slate-600 dark:text-slate-300 print:hidden">
         Answer five short questions about your product or organisation and we'll map the Data Risk &amp;
         Compliance (DRC) laws, standards and obligations most likely to apply — with concrete next steps.
       </p>
 
+      {/* Amber stays: this is a caution notice, not the brand accent. */}
       <div className="mt-5 max-w-3xl rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-slate-700 dark:border-amber-800/60 dark:bg-amber-900/20 dark:text-slate-200 print:hidden">
         <strong>⚠️ Educational guidance, not legal advice.</strong> This is a learning aid built on the{' '}
-        <a href="/atlas" className="font-medium text-amber-700 underline dark:text-amber-400">Data Risk &amp; Compliance (DRC) Atlas</a>. It isn't
+        <a href="/atlas" className="font-medium text-blue-700 underline dark:text-blue-300">Data Risk &amp; Compliance (DRC) Atlas</a>. It isn't
         exhaustive. Verify everything against the official source and qualified counsel.
       </div>
 
-      {/* presets */}
-      <section className="mt-6 print:hidden">
-        <p className="text-sm text-slate-500 dark:text-slate-400">Not sure where to start? Try a hypothetical product:</p>
-        <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-          {caseStudies.map((cs) => (
-            <button
-              key={cs.id}
-              type="button"
-              onClick={() => applyPreset(cs)}
-              className="rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-amber-400 dark:border-slate-700 dark:bg-slate-800"
-            >
-              <span className="block font-semibold text-slate-800 dark:text-slate-100">{cs.name}</span>
-              <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">{cs.blurb}</span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* questionnaire — collapsed by default so presets and the report lead */}
+      {/* questionnaire — collapsed by default so the report leads */}
       <section className="mt-6 print:hidden">
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
           <button
@@ -243,7 +236,7 @@ export default function Navigator() {
               <span className="block text-lg font-semibold text-slate-800 dark:text-slate-200">📝 Tell us about your product</span>
               <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
                 Five questions — jurisdictions, sector, data, activities and your role
-                {answered > 0 && <span className="ml-1 text-amber-600 dark:text-amber-400">· {answered} selected</span>}
+                {answered > 0 && <span className="ml-1 text-blue-600 dark:text-blue-400">· {answered} selected</span>}
               </span>
             </span>
             <span className={`shrink-0 text-slate-400 transition-transform ${questionsOpen ? 'rotate-90' : ''}`}>▶</span>
@@ -257,12 +250,12 @@ export default function Navigator() {
 
             <fieldset>
               <legend className="font-semibold text-slate-800 dark:text-slate-200">
-                <span className="mr-1 text-amber-600 dark:text-amber-400">5 ·</span> What is your role?
+                <span className="mr-1 text-blue-600 dark:text-blue-400">5 ·</span> What is your role?
               </legend>
               <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {roleOptions.map((o) => (
                   <label key={o.value} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                    <input type="radio" name="role" value={o.value} checked={answers.role === o.value} onChange={() => setAnswers((a) => ({ ...a, role: o.value }))} className="mt-0.5 accent-amber-500" />
+                    <input type="radio" name="role" value={o.value} checked={answers.role === o.value} onChange={() => setAnswers((a) => ({ ...a, role: o.value }))} className="mt-0.5 accent-blue-500" />
                     {o.label}
                   </label>
                 ))}
@@ -270,10 +263,59 @@ export default function Navigator() {
             </fieldset>
 
             <div className="flex flex-wrap gap-3 pt-1">
-              <button type="submit" className="rounded-lg bg-amber-500 px-5 py-2.5 font-medium text-white hover:bg-amber-600">Show what applies →</button>
-              <button type="button" onClick={clear} className="rounded-lg border border-slate-300 px-5 py-2.5 font-medium text-slate-600 hover:border-amber-400 dark:border-slate-600 dark:text-slate-300">Clear</button>
+              <button type="submit" className="rounded-lg bg-blue-500 px-5 py-2.5 font-medium text-white hover:bg-blue-600">Show what applies →</button>
+              <button type="button" onClick={clear} className="rounded-lg border border-slate-300 px-5 py-2.5 font-medium text-slate-600 hover:border-blue-400 dark:border-slate-600 dark:text-slate-300">Clear</button>
             </div>
           </form>
+        </div>
+      </section>
+
+      {/* presets — collapse once a report exists */}
+      <section className="mt-6 print:hidden">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+          <button
+            type="button"
+            onClick={() => setPresetsOpen((o) => !o)}
+            className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
+            aria-expanded={presetsOpen}
+            aria-controls="navigator-presets"
+          >
+            <span>
+              <span className="block text-lg font-semibold text-slate-800 dark:text-slate-200">🧪 Try a hypothetical product</span>
+              <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
+                Not sure where to start? Pick a worked case study to fill in the questions
+                {activePreset && <span className="ml-1 text-blue-600 dark:text-blue-300">· {activePreset.name} selected</span>}
+              </span>
+            </span>
+            <span className={`shrink-0 text-slate-400 transition-transform ${presetsOpen ? 'rotate-90' : ''}`}>▶</span>
+          </button>
+
+          <div id="navigator-presets" className={presetsOpen ? 'px-5 pb-5' : 'hidden'}>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              {caseStudies.map((cs) => {
+                const on = activePreset?.id === cs.id;
+                return (
+                  <button
+                    key={cs.id}
+                    type="button"
+                    onClick={() => applyPreset(cs)}
+                    aria-pressed={on}
+                    className={`rounded-xl border p-3 text-left transition ${
+                      on
+                        ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500/30 dark:border-blue-400 dark:bg-blue-900/25'
+                        : 'border-slate-200 bg-white hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800'
+                    }`}
+                  >
+                    <span className="flex items-baseline justify-between gap-2">
+                      <span className="font-semibold text-slate-800 dark:text-slate-100">{cs.name}</span>
+                      {on && <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-blue-600 dark:text-blue-300">Selected</span>}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">{cs.blurb}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -283,7 +325,7 @@ export default function Navigator() {
 
       {/* results */}
       {model && <Results model={model} answers={submitted} checked={checked} onToggleAction={toggleAction} />}
-    </div>
+    </>
   );
 }
 
@@ -292,13 +334,13 @@ function CheckGroup({ n, legend, hint, name, options, answers, onToggle }) {
   return (
     <fieldset>
       <legend className="font-semibold text-slate-800 dark:text-slate-200">
-        <span className="mr-1 text-amber-600 dark:text-amber-400">{n} ·</span> {legend}
+        <span className="mr-1 text-blue-600 dark:text-blue-400">{n} ·</span> {legend}
         {hint && <span className="ml-1 text-xs font-normal text-slate-400">({hint})</span>}
       </legend>
       <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {options.map((o) => (
           <label key={o.value} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-            <input type="checkbox" checked={answers[name].includes(o.value)} onChange={() => onToggle(name, o.value)} className="mt-0.5 accent-amber-500" />
+            <input type="checkbox" checked={answers[name].includes(o.value)} onChange={() => onToggle(name, o.value)} className="mt-0.5 accent-blue-500" />
             {o.label}
           </label>
         ))}
@@ -308,6 +350,7 @@ function CheckGroup({ n, legend, hint, name, options, answers, onToggle }) {
 }
 
 function Results({ model, answers, checked, onToggleAction }) {
+  const reportPreset = presetFor(answers);
   // Assemble the governance framework from the pieces already computed below:
   // the risk register, the policies, and the matched obligations.
   const policies = model.risk.length ? policyPlan(model.risk) : [];
@@ -339,7 +382,10 @@ function Results({ model, answers, checked, onToggleAction }) {
   }
 
   const sectionIds = sections.map((s) => s.id).join(',');
-  const [collapsed, setCollapsed] = useState(() => new Set());
+  // Tracked as "expanded" rather than "collapsed" so the default (empty set) is
+  // every section closed — including any section that only appears for a later
+  // set of answers.
+  const [expanded, setExpanded] = useState(() => new Set());
   const [active, setActive] = useState(null);
 
   // Scroll-spy: highlight the section nearest the top of the viewport.
@@ -359,10 +405,10 @@ function Results({ model, answers, checked, onToggleAction }) {
     return () => obs.disconnect();
   }, [sectionIds]);
 
-  const allOpen = sections.every((s) => !collapsed.has(s.id));
-  const toggleAll = () => setCollapsed(allOpen ? new Set(sections.map((s) => s.id)) : new Set());
+  const allOpen = sections.every((s) => expanded.has(s.id));
+  const toggleAll = () => setExpanded(allOpen ? new Set() : new Set(sections.map((s) => s.id)));
   const toggleOne = (id) =>
-    setCollapsed((prev) => {
+    setExpanded((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
@@ -372,13 +418,18 @@ function Results({ model, answers, checked, onToggleAction }) {
     <section id="nav-report" className="mt-10">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Your applicability report</h2>
+          {/* Named after the case study when the report came from one — matched on
+              the submitted answers, so it tracks the report, not the live form. */}
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            Your applicability report
+            {reportPreset && <span className="text-slate-400"> — {reportPreset.name}</span>}
+          </h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{describeAnswers(answers)}</p>
         </div>
         <div className="flex gap-2 print:hidden">
-          <button type="button" onClick={toggleAll} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-amber-400 dark:border-slate-600 dark:text-slate-300">{allOpen ? '⊟ Collapse all' : '⊞ Expand all'}</button>
-          <button type="button" onClick={printReport} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-amber-400 dark:border-slate-600 dark:text-slate-300">🖨 Print / PDF</button>
-          <button type="button" onClick={() => downloadMarkdown(model, answers, checked)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-amber-400 dark:border-slate-600 dark:text-slate-300">⬇ Markdown</button>
+          <button type="button" onClick={toggleAll} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-blue-400 dark:border-slate-600 dark:text-slate-300">{allOpen ? '⊟ Collapse all' : '⊞ Expand all'}</button>
+          <button type="button" onClick={printReport} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-blue-400 dark:border-slate-600 dark:text-slate-300">🖨 Print / PDF</button>
+          <button type="button" onClick={() => downloadMarkdown(model, answers, checked)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-blue-400 dark:border-slate-600 dark:text-slate-300">⬇ Markdown</button>
         </div>
       </div>
       <div className="mt-3 hidden rounded-lg border border-slate-300 px-4 py-2 text-xs text-slate-500 print:block">
@@ -397,7 +448,7 @@ function Results({ model, answers, checked, onToggleAction }) {
                   onClick={() => setActive(s.id)}
                   className={`-ml-px block border-l-2 py-1.5 pl-3 text-sm transition ${
                     active === s.id
-                      ? 'border-amber-500 font-medium text-amber-600 dark:text-amber-400'
+                      ? 'border-blue-500 font-medium text-blue-600 dark:text-blue-400'
                       : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
                   }`}
                 >
@@ -411,7 +462,7 @@ function Results({ model, answers, checked, onToggleAction }) {
         {/* Report body */}
         <div className="min-w-0 flex-1 space-y-6">
           {sections.map((s) => (
-            <Section key={s.id} id={s.id} title={s.title} active={active === s.id} open={!collapsed.has(s.id)} onToggle={() => toggleOne(s.id)}>
+            <Section key={s.id} id={s.id} title={s.title} active={active === s.id} open={expanded.has(s.id)} onToggle={() => toggleOne(s.id)}>
               {s.body}
             </Section>
           ))}
@@ -428,7 +479,7 @@ function Section({ id, title, active, open, onToggle, children }) {
     <section id={id} className="scroll-mt-24">
       <div
         className={`overflow-hidden rounded-2xl border bg-white shadow-sm transition-colors dark:bg-slate-800 ${
-          active ? 'border-amber-400 dark:border-amber-500' : 'border-slate-200 dark:border-slate-700'
+          active ? 'border-blue-400 dark:border-blue-500' : 'border-slate-200 dark:border-slate-700'
         }`}
       >
         <button type="button" onClick={onToggle} className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left" aria-expanded={open}>
@@ -465,7 +516,7 @@ function GovernanceFramework({ framework }) {
       <div className="mt-4 flex flex-wrap gap-2">
         {statItems.map(([label, n]) => (
           <span key={label} className="inline-flex items-baseline gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 dark:border-slate-700 dark:bg-slate-900/40">
-            <span className="text-base font-bold text-amber-600 dark:text-amber-400">{n}</span>
+            <span className="text-base font-bold text-blue-600 dark:text-blue-400">{n}</span>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</span>
           </span>
         ))}
@@ -663,8 +714,8 @@ function FilterGroup({ label, value, onChange, opts }) {
             onClick={() => onChange(v)}
             className={`px-2.5 py-1 text-xs font-medium transition ${i > 0 ? 'border-l border-slate-200 dark:border-slate-700' : ''} ${
               value === v
-                ? 'bg-amber-500 text-white'
-                : 'bg-white text-slate-600 hover:bg-amber-50 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                ? 'bg-blue-500 text-white'
+                : 'bg-white text-slate-600 hover:bg-blue-50 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
             }`}
           >
             {l}
@@ -891,7 +942,7 @@ function ResultCardBody({ item, reason, checked, onToggleAction, lessonSlug }) {
 
       <div className="mt-3 flex flex-wrap gap-4 text-sm">
         <a href={item.url} target="_blank" rel="noopener" className="font-medium text-sky-600 hover:underline dark:text-sky-400">Official source ↗</a>
-        <a href={`/lesson/${lessonSlug}`} className="font-medium text-amber-600 hover:underline dark:text-amber-400">↳ Learn the concept</a>
+        <a href={`/lesson/${lessonSlug}`} className="font-medium text-blue-600 hover:underline dark:text-blue-400">↳ Learn the concept</a>
       </div>
     </>
   );
@@ -906,6 +957,27 @@ function hasAny(a) {
 // restored or preset answers are visible without opening it.
 function countAnswers(a) {
   return a.jurisdictions.length + a.sectors.length + a.dataTypes.length + a.activities.length;
+}
+
+// Which case study (if any) a set of answers exactly matches. Derived from the
+// answers rather than tracked as state: that way it survives a page reload, and
+// it clears itself the moment the user edits an answer away from the preset.
+const sameSet = (a, b) => a.length === b.length && a.every((v) => b.includes(v));
+
+function presetFor(a) {
+  if (!a) return null;
+  return (
+    caseStudies.find((cs) => {
+      const i = { ...EMPTY, ...cs.inputs };
+      return (
+        sameSet(i.jurisdictions, a.jurisdictions) &&
+        sameSet(i.sectors, a.sectors) &&
+        sameSet(i.dataTypes, a.dataTypes) &&
+        sameSet(i.activities, a.activities) &&
+        i.role === a.role
+      );
+    }) || null
+  );
 }
 
 function computeModel(a) {

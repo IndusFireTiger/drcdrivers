@@ -18,7 +18,7 @@ export default function DecisionScenario({ prompt, options, onResolved }) {
           const isPicked = picked === i;
           const show = picked !== null;
           const base = 'w-full rounded-lg border px-4 py-3 text-left transition';
-          let tone = 'border-slate-200 hover:border-amber-400 hover:bg-amber-50 dark:border-slate-600 dark:hover:bg-amber-900/20';
+          let tone = 'border-slate-200 hover:border-blue-400 hover:bg-blue-50 dark:border-slate-600 dark:hover:bg-blue-900/20';
           if (show && opt.correct) tone = 'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/30';
           else if (show && isPicked && !opt.correct) tone = 'border-rose-400 bg-rose-50 dark:bg-rose-900/30';
           else if (show) tone = 'border-slate-200 opacity-60 dark:border-slate-600';

@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { CONTROLS, OBLIGATION_THEMES, libraryRows } from '../data/policies.js';
-import TopNav from './TopNav.jsx';
 
 // ── The Policy Library ───────────────────────────────────────────────────────
 // A standing reference of every policy in the catalogue — the role that owns it,
@@ -58,23 +57,20 @@ export default function PolicyLibrary() {
   const clearFacet = (key) => setFilters((f) => ({ ...f, [key]: [] }));
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10">
-      <div className="max-w-3xl">
-      <TopNav current="policies" />
-
-      <p className="mt-4 text-sm font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">📚 Policy Library</p>
+    <>
+      <p className="mt-4 text-sm font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400">Policy Library</p>
       <h1 className="mt-1 text-3xl font-bold text-slate-900 dark:text-slate-100">The policies behind the controls</h1>
-      <p className="mt-2 text-slate-600 dark:text-slate-300">
+      <p className="mt-2 max-w-3xl text-slate-600 dark:text-slate-300">
         Every policy in the catalogue — the role that owns it, the controls it establishes, the risks it addresses and the
         obligations it helps you meet — each with a sample draft you can adapt. The{' '}
-        <a href="/" className="font-medium text-amber-600 underline dark:text-amber-400">Navigator</a> recommends the subset
+        <a href="/" className="font-medium text-blue-600 underline dark:text-blue-400">Navigator</a> recommends the subset
         that fits your answers; this is the full set.
       </p>
 
-      <div className="mt-5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-slate-700 dark:border-amber-800/60 dark:bg-amber-900/20 dark:text-slate-200">
+      {/* Amber stays: this is a caution notice, not the brand accent. */}
+      <div className="mt-5 max-w-3xl rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-slate-700 dark:border-amber-800/60 dark:bg-amber-900/20 dark:text-slate-200">
         <strong>⚠️ Educational guidance, not legal advice.</strong> These are learning templates — adapt every draft to your
         own context and have it reviewed by qualified counsel before you rely on it.
-      </div>
       </div>
 
       {/* Two-column shell: a sticky faceted filter rail on the left, cards on the right */}
@@ -83,7 +79,7 @@ export default function PolicyLibrary() {
           <div className="flex items-center justify-between gap-3">
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">Filter policies</p>
             {activeCount > 0 && (
-              <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} className="text-xs font-medium text-amber-600 hover:underline dark:text-amber-400">
+              <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} className="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
                 Clear all ({activeCount})
               </button>
             )}
@@ -96,7 +92,7 @@ export default function PolicyLibrary() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search filters…"
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-8 pr-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-amber-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-amber-400 dark:border-slate-600 dark:bg-slate-900/40 dark:text-slate-200 dark:focus:bg-slate-900"
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-8 pr-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-400 dark:border-slate-600 dark:bg-slate-900/40 dark:text-slate-200 dark:focus:bg-slate-900"
               />
             </div>
             <FacetSection label="Risk it addresses" name="risk" options={options.risk} selected={filters.risk} onToggle={toggle} onClear={clearFacet} q={q} />
@@ -125,7 +121,7 @@ export default function PolicyLibrary() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -150,11 +146,11 @@ function FacetSection({ label, name, options, selected, onToggle, onClear, q }) 
           <span className={`text-slate-400 transition-transform ${expanded ? 'rotate-90' : ''}`}>▸</span>
           <span>
             {label}
-            {selected.length > 0 && <span className="text-amber-600 dark:text-amber-400"> ({selected.length})</span>}
+            {selected.length > 0 && <span className="text-blue-600 dark:text-blue-400"> ({selected.length})</span>}
           </span>
         </button>
         {selected.length > 0 && (
-          <button type="button" onClick={() => onClear(name)} className="shrink-0 text-[10px] font-medium text-amber-600 hover:underline dark:text-amber-400">
+          <button type="button" onClick={() => onClear(name)} className="shrink-0 text-[10px] font-medium text-blue-600 hover:underline dark:text-blue-400">
             clear
           </button>
         )}
@@ -163,7 +159,7 @@ function FacetSection({ label, name, options, selected, onToggle, onClear, q }) 
         <div className="mt-2 space-y-1.5 pl-5">
           {shown.map(([val, lbl]) => (
             <label key={val} className="flex cursor-pointer items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-              <input type="checkbox" checked={selected.includes(val)} onChange={() => onToggle(name, val)} className="mt-0.5 accent-amber-500" />
+              <input type="checkbox" checked={selected.includes(val)} onChange={() => onToggle(name, val)} className="mt-0.5 accent-blue-500" />
               <span>{lbl}</span>
             </label>
           ))}
@@ -204,7 +200,7 @@ function PolicyLibraryCard({ p }) {
             onClick={() => setTab(key)}
             className={`-mb-px border-b-2 pb-2 text-sm font-medium transition ${
               tab === key
-                ? 'border-amber-500 text-amber-600 dark:text-amber-400'
+                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                 : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
             }`}
           >
@@ -230,7 +226,7 @@ function PolicyLibraryCard({ p }) {
               <button
                 type="button"
                 onClick={() => downloadDraft(p)}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-amber-400 dark:border-slate-600 dark:text-slate-300"
+                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-blue-400 dark:border-slate-600 dark:text-slate-300"
               >
                 ⬇ Download .md
               </button>
@@ -310,7 +306,7 @@ function CopyButton({ getText }) {
     <button
       type="button"
       onClick={onCopy}
-      className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-amber-400 dark:border-slate-600 dark:text-slate-300"
+      className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-blue-400 dark:border-slate-600 dark:text-slate-300"
     >
       {copied ? '✓ Copied' : '⧉ Copy'}
     </button>

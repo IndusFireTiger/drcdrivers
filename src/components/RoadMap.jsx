@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { isComplete, completedCount } from '../lib/progress.js';
-import TopNav from './TopNav.jsx';
 
 // The home screen: a winding "roadmap" road. Milestone markers sit on an asphalt
 // road with a dashed centre line; cards alternate left/right and animate on hover.
@@ -33,11 +32,9 @@ export default function RoadMap({ stops }) {
   ]);
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10">
-      <TopNav current="road" />
-      <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-3xl">
       <header className="mt-6 text-center">
-        <p className="text-sm font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">DRCDrivers</p>
+        <p className="text-sm font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400">DRCDrivers</p>
         <h1 className="mt-2 text-4xl font-bold text-slate-900 dark:text-slate-100">Drive the road of Data Risk &amp; Compliance</h1>
         <p className="mx-auto mt-3 max-w-xl text-slate-600 dark:text-slate-300">
           Six stops, end to end. At each one you'll learn a concept — and see what your product
@@ -83,7 +80,8 @@ export default function RoadMap({ stops }) {
             vectorEffect="non-scaling-stroke"
             className="stroke-slate-300 dark:stroke-slate-700"
           />
-          {/* dashed centre lane line */}
+          {/* Dashed centre lane line. Amber stays: this depicts a real road
+              marking, which is yellow — it isn't the brand accent. */}
           <path
             d={roadPath}
             fill="none"
@@ -120,13 +118,13 @@ export default function RoadMap({ stops }) {
                 style={{ left, top: '50%' }}
               >
                 {/* hover pulse ring */}
-                <span className="absolute inset-0 rounded-full bg-amber-400/40 opacity-0 transition group-hover:animate-ping group-hover:opacity-100" />
+                <span className="absolute inset-0 rounded-full bg-blue-400/40 opacity-0 transition group-hover:animate-ping group-hover:opacity-100" />
                 <span
                   className={`relative flex h-14 w-14 items-center justify-center rounded-full border-4 text-2xl shadow transition-transform duration-200 group-hover:scale-110 ${
                     completed
                       ? 'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/50'
                       : clickable
-                        ? 'border-amber-400 bg-white dark:bg-slate-800'
+                        ? 'border-blue-400 bg-white dark:bg-slate-800'
                         : 'border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800'
                   }`}
                 >
@@ -142,12 +140,12 @@ export default function RoadMap({ stops }) {
                 <span
                   className={`block rounded-xl border p-4 shadow-sm transition-all duration-200 group-hover:-translate-y-1 group-hover:shadow-xl ${
                     clickable
-                      ? 'border-slate-200 bg-white group-hover:border-amber-400 dark:border-slate-700 dark:bg-slate-800'
+                      ? 'border-slate-200 bg-white group-hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800'
                       : 'border-dashed border-slate-200 bg-slate-50 opacity-70 dark:border-slate-700 dark:bg-slate-800/50'
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
                       {s.id}
                     </span>
                     <span className="font-semibold text-slate-900 dark:text-slate-100">{s.title}</span>
@@ -157,7 +155,7 @@ export default function RoadMap({ stops }) {
                     {completed ? (
                       <span className="text-emerald-600 dark:text-emerald-400">✓ Cleared</span>
                     ) : clickable ? (
-                      <span className="text-amber-600 transition-transform group-hover:translate-x-0.5 dark:text-amber-400">
+                      <span className="text-blue-600 transition-transform group-hover:translate-x-0.5 dark:text-blue-400">
                         Start →
                       </span>
                     ) : (
@@ -172,12 +170,11 @@ export default function RoadMap({ stops }) {
       </div>
 
       <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
-        <a href="/cheatsheet" className="text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400">
+        <a href="/cheatsheet" className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400">
           📄 Jump to the one-page cheat-sheet
         </a>
       </div>
       <p className="mt-2 text-center text-xs text-slate-400">Progress is saved in your browser.</p>
-      </div>
     </div>
   );
 }

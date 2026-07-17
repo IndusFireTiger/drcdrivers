@@ -15,11 +15,10 @@ export default function LessonView({ lesson, nextSlug }) {
   }, [passed, lesson.slug]);
 
   return (
-    <article className="mx-auto max-w-2xl space-y-10 px-5 py-10">
-      <header>
-        <a href="/road" className="text-sm text-slate-500 hover:text-amber-600 dark:text-slate-400">← The road</a>
-        <h1 className="mt-2 text-3xl font-bold text-slate-900 dark:text-slate-100">
-          <span className="mr-2">{lesson.icon}</span>Stop {lesson.id}: {lesson.title}
+    <article className="mx-auto max-w-2xl space-y-10">
+      <header className="mt-6">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+          Stop {lesson.id}: {lesson.title}
         </h1>
         <p className="mt-1 text-slate-500 dark:text-slate-400">{lesson.subtitle}</p>
       </header>
@@ -27,7 +26,7 @@ export default function LessonView({ lesson, nextSlug }) {
       {/* Hook */}
       <section className="space-y-3">
         <p className="text-slate-700 dark:text-slate-300">{lesson.hook.metaphor}</p>
-        <blockquote className="border-l-4 border-amber-400 bg-amber-50 px-4 py-3 text-slate-700 dark:bg-amber-900/20 dark:text-slate-200">
+        <blockquote className="border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-slate-700 dark:bg-blue-900/20 dark:text-slate-200">
           {lesson.hook.scenario}
         </blockquote>
       </section>
@@ -42,7 +41,7 @@ export default function LessonView({ lesson, nextSlug }) {
 
       {/* Build bridge */}
       <section className="rounded-xl bg-slate-900 px-5 py-4 text-slate-100 dark:bg-slate-950 dark:ring-1 dark:ring-slate-700">
-        <span className="text-xs font-semibold uppercase tracking-wide text-amber-400">
+        <span className="text-xs font-semibold uppercase tracking-wide text-blue-400">
           So your product must…
         </span>
         <p className="mt-1" dangerouslySetInnerHTML={{ __html: mdBold(lesson.buildBridge) }} />
@@ -76,8 +75,8 @@ export default function LessonView({ lesson, nextSlug }) {
       </section>
 
       {/* Teach-back */}
-      <section className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 dark:border-amber-800/50 dark:bg-amber-900/20">
-        <span className="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">Teach it back</span>
+      <section className="rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 dark:border-blue-800/50 dark:bg-blue-900/20">
+        <span className="text-xs font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-400">Teach it back</span>
         <p className="mt-1 text-slate-700 dark:text-slate-300">{lesson.teachBack}</p>
       </section>
 
@@ -92,7 +91,7 @@ export default function LessonView({ lesson, nextSlug }) {
         {passed && nextSlug ? (
           <a
             href={`/lesson/${nextSlug}`}
-            className="inline-block rounded-lg bg-amber-500 px-5 py-3 font-medium text-white hover:bg-amber-600"
+            className="inline-block rounded-lg bg-blue-500 px-5 py-3 font-medium text-white hover:bg-blue-600"
           >
             Drive to the next stop →
           </a>
@@ -101,7 +100,7 @@ export default function LessonView({ lesson, nextSlug }) {
             <a href="/cheatsheet" className="inline-block rounded-lg bg-emerald-600 px-5 py-3 font-medium text-white hover:bg-emerald-700">
               🏁 You've driven the whole road — get the cheat-sheet
             </a>
-            <a href="/road" className="inline-block rounded-lg border border-slate-300 px-5 py-3 font-medium text-slate-600 hover:border-amber-400 dark:border-slate-600 dark:text-slate-300">
+            <a href="/road" className="inline-block rounded-lg border border-slate-300 px-5 py-3 font-medium text-slate-600 hover:border-blue-400 dark:border-slate-600 dark:text-slate-300">
               Back to the map
             </a>
           </div>

@@ -1,6 +1,13 @@
 ---
 import ThemeToggle from '../components/ThemeToggle.jsx';
-const { title = 'DRCDrivers — Data Risk & Compliance, interactively' } = Astro.props;
+import TopNav from '../components/TopNav.jsx';
+
+// The shared page shell. Every page gets the same container width, the same
+// padding and the same nav row from here — pages render their content only.
+// `current` is the TopNav key to mark active; omit it for pages that aren't a
+// top-level destination (lessons and the cheat-sheet sit under the road) so the
+// nav stays fully navigable.
+const { title = 'DRCDrivers — Data Risk & Compliance, interactively', current } = Astro.props;
 ---
 
 <!doctype html>
@@ -31,6 +38,18 @@ const { title = 'DRCDrivers — Data Risk & Compliance, interactively' } = Astro
   </head>
   <body class="min-h-screen bg-slate-50 text-slate-900 antialiased transition-colors dark:bg-slate-900 dark:text-slate-100">
     <ThemeToggle client:load />
-    <slot />
+    {/* The nav sits on its own surface — a full-bleed dark band that reads as a
+        bar against the page in both themes (white on slate-50 was too close to
+        register). Dark in light mode and dark mode alike, so the nav keeps one
+        set of link colours. The inner container matches the content container
+        below, so the links stay aligned with the page. */}
+    <header class="border-b border-slate-700 bg-slate-800 shadow-sm dark:border-slate-600 dark:bg-slate-700 print:hidden">
+      <div class="mx-auto w-full max-w-[120rem] px-6 py-3">
+        <TopNav current={current} />
+      </div>
+    </header>
+    <div class="mx-auto w-full max-w-[120rem] px-6 py-10">
+      <slot />
+    </div>
   </body>
 </html>
