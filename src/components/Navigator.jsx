@@ -557,10 +557,9 @@ function GovernanceFramework({ framework }) {
                     <>
                       <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{r.owns.length}</span>
                       <span className="mt-1 flex flex-wrap gap-1">
-                        {r.owns.slice(0, 4).map((o, i) => (
+                        {r.owns.map((o, i) => (
                           <span key={i} className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${o.kind === 'policy' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'}`}>{o.label}</span>
                         ))}
-                        {r.owns.length > 4 && <span className="text-[10px] text-slate-400">+{r.owns.length - 4} more</span>}
                       </span>
                     </>
                   )}
@@ -1030,7 +1029,7 @@ function buildMarkdown(model, a, checked) {
     fw.principles.forEach((p) => L.push(`- **${p.title}.** ${p.detail}`));
     L.push('', '### Operating model — who is accountable');
     fw.roles.forEach((r) => {
-      const owns = r.owns.length ? ` _(owns ${r.owns.length}: ${r.owns.slice(0, 4).map((o) => o.label).join('; ')}${r.owns.length > 4 ? '; …' : ''})_` : ' _(framework sponsor)_';
+      const owns = r.owns.length ? ` _(owns ${r.owns.length}: ${r.owns.map((o) => o.label).join('; ')})_` : ' _(framework sponsor)_';
       L.push(`- **${r.name}** — ${r.mandate}${owns}`);
     });
     L.push('', '### Assurance & review cadence');
